@@ -38,9 +38,9 @@ The Hard level comprises 32 distinct walls having twenty-five walls to surpass t
 Still, arms and legs are still movable but the arms now have three variations each. The speed is fast.
 
 
-### Insane Level ![Workability](https://img.shields.io/badge/workability-No-Red.svg?style=flat-square) 
+### Endless Level ![Workability](https://img.shields.io/badge/workability-No-Red.svg?style=flat-square) 
 
-The Insane Level is an all-out combination of the past three levels and shall end only when it is game over.
+The Endless Level is an all-out combination of the past three levels and shall end only when it is game over.
 
 High Scores
 -----------
