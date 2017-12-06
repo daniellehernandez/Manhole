@@ -20,25 +20,25 @@ Press B to toggle the right leg.
 
 Levels
 ------
-###Easy Level ![Workability](https://img.shields.io/badge/workability-In%20Progress-yellow.svg?style=flat-square) 
+### Easy Level ![Workability](https://img.shields.io/badge/workability-In%20Progress-yellow.svg?style=flat-square) 
 
 The Easy level comprises four distinct walls having ten walls to surpass the level. 
 Only the arms are movable in this level which only has two variations each. The speed is slow.
 
 
-###Medium Level ![Workability](https://img.shields.io/badge/workability-No-Red.svg?style=flat-square) 
+### Medium Level ![Workability](https://img.shields.io/badge/workability-No-Red.svg?style=flat-square) 
 
 The Medium Level comprises sixteen distinct walls having fifteen walls to surpass the level.
 In this level, both the arms and legs are movable and having two variations each. The speed is moderate.
 
 
-###Hard Level ![Workability](https://img.shields.io/badge/workability-No-Red.svg?style=flat-square) 
+### Hard Level ![Workability](https://img.shields.io/badge/workability-No-Red.svg?style=flat-square) 
 
 The Hard level comprises 32 distinct walls having twenty-five walls to surpass the level.
 Still, arms and legs are still movable but the arms now have three variations each. The speed is fast.
 
 
-###Insane Level ![Workability](https://img.shields.io/badge/workability-No-Red.svg?style=flat-square) 
+### Insane Level ![Workability](https://img.shields.io/badge/workability-No-Red.svg?style=flat-square) 
 
 The Insane Level is an all-out combination of the past three levels and shall end only when it is game over.
 
