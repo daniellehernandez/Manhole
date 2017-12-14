@@ -104,6 +104,7 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	PATH_EASY3		DB 	15 DUP (00H)
 	PATH_EASY4 		DB 	15 DUP (00H)
 	PATH_EASY5 		DB 	15 DUP (00H)
+	PATH_CLEAR		DB 	15 DUP (00H), '$'
 	LEVEL_STATUS 	DB 	15 DUP ('$')
 	HANDLE_LOADING	DW 	?
 	LOAD_STR 		DB 	7500 DUP('$'), '$'
@@ -126,7 +127,7 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	CURR_STATE 		DB 	1
 	GAME_STATUS 	DB 	1
 	INTERVAL 		DW 	2500
-	LOOPS 			DB 	2
+	LOOPS 			DB 	5
 	DIVISOR 		DW 	4
 	BACKGROUND_G 	DB 	03H
 	BACKGROUND_P 	DB 	73H
@@ -175,9 +176,8 @@ CONT_CLEAR:
 	CMP 	STATUS, 2
 	JE 		GOTO_HOWTO
 	CMP 	STATUS, 3
-	JE 		GOTO_HIGHS
-	CMP 	STATUS, 4 				;status 4 is quit\
-	JE		EXIT_BR
+	JE 		GOTO_HIGHS				;status 4 is quit\
+	CALL	_TERMINATE
 
 GOTO_HOWTO:
 	CALL 	HOWTO
@@ -186,7 +186,9 @@ GOTO_HIGHS:
 	CALL 	HIGHS
 
 GOTO_PLAY:
-	MOV 	INTERVAL, 2500
+	MOV 	LOOPS, 3
+	MOV 	INTERVAL, 1500
+	MOV 	STATUS_GM, 1
 	MOV 	DIVISOR, 4
 	LEA 	SI, SCORE_TXT
 	ADD 	SI, 7
@@ -201,18 +203,13 @@ GOTO_PLAY:
 	MOV 	CX, 0000H  				;from top, leftmost
 	MOV		DX, 184FH 				;to bottom, rightmost
 	CALL 	_CLEAR_SCREEN
-;open file
+	;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_EASY
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
-	JMP 	READING
-
-EXIT_BR:
-	JMP 	EXIT
-
-READING:
+	
 	;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
@@ -221,9 +218,6 @@ READING:
 	INT 	21H
 	LEA 	SI, PLAY_STR
 	CALL 	OUTPUT_EXT
-	MOV 	LOOPS, 3
-	MOV 	INTERVAL, 1500
-	MOV 	STATUS_GM, 1
 	MOV 	CX, 14
 	LEA 	SI, LEVEL_EASY
 	LEA 	DI, LEVEL_STATUS
@@ -232,9 +226,7 @@ READING:
 	MOV 	SI, 30
 	CALL 	_DELAY
 	CALL 	PLAY
-	JMP 	CONT_READ_MEDD
 	
-CONT_READ_MEDD:
 	MOV 	INTERVAL, 1500
 	MOV 	LOOPS, 5
 	MOV 	DIVISOR, 16
@@ -250,9 +242,6 @@ CONT_READ_MEDD:
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
 	JMP 	CONT_READ_MED
-
-BACK_TO_MAIN_BR:
-	JMP 	BACK_TO_MAIN
 
 CONT_READ_MED:
 	;read file
@@ -274,6 +263,8 @@ CONT_READ_MED:
 	CALL 	PLAY
 
 	MOV 	LOOPS, 5
+	MOV 	STATUS_GM, 3
+	MOV 	INTERVAL, 1250
 	MOV 	BACKGROUND_G, 06H
 	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
 	MOV 	CX, 0000H  				;from top, leftmost
@@ -294,7 +285,6 @@ CONT_READ_MED:
 	INT 	21H
 	LEA 	SI, PLAY_STR
 	CALL 	OUTPUT_EXT
-	MOV 	STATUS_GM, 3
 	MOV 	CX, 14
 	LEA 	SI, LEVEL_HARD
 	LEA 	DI, LEVEL_STATUS
@@ -302,7 +292,6 @@ CONT_READ_MED:
 	MOV 	BP, 30
 	MOV 	SI, 30
 	CALL 	_DELAY
-	MOV 	INTERVAL, 1250
 	CALL 	PLAY
 
 	JMP 	GO_ENDLESS
@@ -341,22 +330,10 @@ GO_ENDLESS:
 	MOV 	SI, 30
 	CALL 	_DELAY
 	CALL 	PLAY
-
-	CMP 	GAME_STATUS, 3
-	JE  	BACK_TO_MAIN
-
-BACK_TO_MAIN:
- 	CALL 	MAINMENU				;call mainmenu
-	CMP 	STATUS, 4 				;status 4 is quit
-	JE 		EXIT
-	CMP 	STATUS, 1 				;status 1 is play
-	JE 		GOTO_PLAY_BR
-	JNE		EXIT 				;TODO should be replaced by actual menu
-EXIT:
-	MOV 	AH, 4CH 				;force exit
-	INT 	21H
+			
 OURMAIN ENDP 
 ;----------------------------------------------------------------------
+
 LOADPAGE PROC NEAR
 	;open file
 	MOV 	AH, 3DH
@@ -469,6 +446,7 @@ DISPLAY_LOADING5:
 
 LOADPAGE ENDP
 ;----------------------------------------------------------------------
+
 HOWTO PROC NEAR
 	MOV   	BH, 0EH         
 	MOV   	CX, 0000H       
@@ -504,14 +482,12 @@ ITERATE_HOWTO:
  	CALL  	_GET_KEY
  	CMP 	ENTER, 1
  	JNE 	ITERATE_HOWTO
- 	CALL 	OURMAIN
 
 ;close file handle of input
  	MOV   	AH, 3EH
  	MOV   	BX, HANDLE_LOADING
  	INT   	21H
-	JMP   	EXIT
-
+ 	CALL 	OURMAIN
 	RET
 HOWTO ENDP
 ;----------------------------------------------------------------------
@@ -582,12 +558,6 @@ ITERATE_HIGHS:
 	JNE 	ITERATE_HIGHS
 	CALL 	OURMAIN
 
-  ;close file handle of input
-  	MOV   	AH, 3EH
-  	MOV   	BX, HANDLE_LOADING
-  	INT   	21H
-  	JMP   	EXIT
-
 	RET
 HIGHS ENDP
 ;----------------------------------------------------------------------
@@ -596,42 +566,34 @@ MAINMENU PROC NEAR
 	MOV 	ENTER, 0
 	MOV 	STATUS, 1
 	MOV 	GAME_STATUS, 0
-
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 0000H
 	MOV 	DX, 184FH
 	CALL 	_CLEAR_SCREEN
-
 	MOV		BH, 83H 				;background: blinking, foreground: yellow
 	MOV 	CX, 0B15H  				;from a certain point
 	MOV		DX, 1224H 
 	CALL 	_CLEAR_SCREEN
-
 	;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_MENU
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
-
 	;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
 	LEA 	DX, LOAD_STR
 	INT 	21H
-
 	;setting cursor to the upperleftmost
 	MOV 	DL, 0H
 	MOV 	DH, 0
 	CALL 	_SET_CURSOR
-
 	;print
 	LEA 	SI, LOAD_STR
 	CALL 	OUTPUT_EXT
-
 	MOV 	CL, 05H
-
 ITERATE:
 	CALL 	_GET_KEY 				;for main menu only
 	CMP 	ENTER, 1 				;if entered, meaning chosen and decided
@@ -641,15 +603,13 @@ ITERATE:
 	CALL 	_SET_CURSOR
 	MOV 	BH, 0EH
 	MOV 	CX, 0000H
-	MOV 	DX, 174FH
+	MOV 	DX, 184FH
 	CALL 	_CLEAR_SCREEN
-
 	;close file handle of input
 	MOV 	AH, 3EH
 	MOV 	BX, HANDLE_LOADING
 	INT 	21H
 	RET
-
 MAINMENU ENDP
 ;----------------------------------------------------------------------
 PLAY PROC NEAR
@@ -668,6 +628,27 @@ PLAYING:
 	CMP 	INTERVAL, 100
 	JBE 	RANDOM_GENERATOR
 	SUB 	INTERVAL, 20
+
+	MOV 	CX, 14
+	LEA 	DI, PATH_EASY1
+	LEA 	SI, PATH_CLEAR
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	DI, PATH_EASY2
+	LEA 	SI, PATH_CLEAR
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	DI, PATH_EASY3
+	LEA 	SI, PATH_CLEAR
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	DI, PATH_EASY4
+	LEA 	SI, PATH_CLEAR
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	DI, PATH_EASY5
+	LEA 	SI, PATH_CLEAR
+	REP 	MOVSB
 
 RANDOM_GENERATOR:
 	MOV     AH, 00h   				; interrupt to get system timer in CX:DX 
@@ -802,22 +783,35 @@ DISPLAY_ERROR1:
 	LEA 	DX, PROMPT_ERROR1
 	MOV 	AH, 09H
 	INT 	21H
+	LEA 	DX, PATH_EASY5
+	MOV 	AH, 09H
+	INT 	21H
+	LEA 	DX, PATH_EASY4
+	MOV 	AH, 09H
+	INT 	21H
+	LEA 	DX, PATH_EASY3
+	MOV 	AH, 09H
+	INT 	21H
+	LEA 	DX, PATH_EASY2
+	MOV 	AH, 09H
+	INT 	21H
 	LEA 	DX, PATH_EASY1
 	MOV 	AH, 09H
 	INT 	21H
-	JMP 	MOVE_WALL
+;	JMP 	MOVE_WALL
+	CALL 	_TERMINATE
 
 DISPLAY_ERROR2:
 	LEA 	DX, PROMPT_ERROR2
 	MOV 	AH, 09H
 	INT 	21H
-	JMP 	EXIT
+	CALL 	_TERMINATE
 
 DISPLAY_ERROR3:
 	LEA 	DX, PROMPT_ERROR3
 	MOV 	AH, 09H
 	INT 	21H
-	JMP 	EXIT
+	CALL 	_TERMINATE
 
 PURSUE:
 	MOV 	DX, 0000
@@ -1022,6 +1016,11 @@ _DELAY ENDP
 ;----------------------------------------------------------------------
 _DELAYSEC PROC	NEAR
 DELAY3:
+	;MOV 	DX, 0101H
+	;CALL 	_SET_CURSOR
+	;LEA  	DX, PATH_EASY1
+	;MOV 	AH, 09H
+	;INT 	21H
 	MOV 	DX, 0002H
 	CALL 	_SET_CURSOR
 	LEA 	DX, SCORE_TXT
@@ -1376,7 +1375,13 @@ IMPL_LWR_RIGHT_UP:
 
 _DELAYSEC ENDP
 ;----------------------------------------------------------------------
-_TERMINATE PROC	NEAR
+_TERMINATE PROC	
+
+	MOV 	BH, 07H 
+	MOV 	CX, 0000H
+	MOV 	DX, 184FH
+	CALL 	_CLEAR_SCREEN
+
 	MOV		AH, 4CH
 	INT		21H
   
@@ -1387,8 +1392,11 @@ OUTPUT_EXT PROC NEAR
 PRINT:
 	MOV 	DX, [SI]
 	CMP 	DL, 226
+	JE 		PROCEED
+	CMP 	DL, 207
+	JE 		WEIRD_O
 	JNE		CONT
-
+PROCEED:
 	INC 	SI
 	MOV 	DX, [SI]
 	CMP 	DL, 96H
@@ -1411,6 +1419,8 @@ PRINT:
 	JE 		TOP_DOWN
 	CMP		DL, 169
 	JE 		BOTTOM_UP
+	CMP 	DL, 172
+	JE 		MULTI
 	JNE 	CONT
 
 CONT:
@@ -1425,6 +1435,10 @@ CONT:
 	JAE		RETURN_LOAD
 	JNE 	PRINT
 
+WEIRD_O:
+	MOV 	DL, 229
+	INC 	SI
+	JMP 	CONT
 TOP_DOWN:
 	MOV 	DL, 203
 	JMP 	CONT
@@ -1446,6 +1460,23 @@ LOW_RIGHT:
 LOW_LEFT:
 	MOV 	DL, 188
 	JMP 	CONT
+MULTI:
+ 	MOV 	DL, 206
+ 	JMP 	CONT
+
+SPECIAL:
+	INC 	SI 
+	MOV 	DX, [SI]
+	CMP 	DL, 91H
+	JE 		STRIKE
+	CMP 	DL, 88H
+	JE 		BLACK
+	CMP 	DL, 93H
+	JE 		BLACK_STRIKE
+	CMP 	DL, 186
+	JE 		CURSOR_POINT
+	JNE 	CONT
+
 STRA_HORI:
 	MOV 	DL, 205
 	JMP 	CONT
@@ -1462,18 +1493,6 @@ CURSOR_POINT:
 	MOV 	DL, 16
 	JMP 	CONT
 
-SPECIAL:
-	INC 	SI 
-	MOV 	DX, [SI]
-	CMP 	DL, 91H
-	JE 		STRIKE
-	CMP 	DL, 88H
-	JE 		BLACK
-	CMP 	DL, 93H
-	JE 		BLACK_STRIKE
-	CMP 	DL, 186
-	JE 		CURSOR_POINT
-	JNE 	CONT
 RETURN_LOAD:
 	RET
 OUTPUT_EXT ENDP
@@ -1496,19 +1515,16 @@ ENTER_ONLY:
 	CMP 	AL, 0DH
 	JE 		_ENTERED
 	JNE 	__LEAVETHIS		;TODO implement enter
-
 __RIGHT_ASSIGN:
 	ADD 	STATUS, 1
 	CMP 	STATUS, 5
 	JE 		__DECRE
 	JMP 	__MOV_POINTER
-
 __LEFT_ASSIGN:
 	SUB		STATUS, 1
 	CMP 	STATUS, 0
 	JE 		__INCRE
 	JMP 	__MOV_POINTER
-
 _ENTERED:
 	MOV 	ENTER, 1
 	JMP 	__LEAVETHIS
@@ -1518,14 +1534,11 @@ __DECRE:
 __INCRE:
 	MOV 	STATUS, 4
 	JMP 	__MOV_POINTER
-
-
 __LEAVETHIS:
 	MOV 	DH, 99
 	MOV 	DL, 99
 	CALL 	_SET_CURSOR
 	RET
-
 __MOV_POINTER:
 	MOV		BH, BACKGROUND_G 				;background: black, foreground: orange
 	MOV 	CX, 1507H  				;from top, leftmost
@@ -1840,6 +1853,49 @@ __MOV_POINTERS:
 	JMP 	__LEAVETHIS2
 
 _GET_KEY_PL	ENDP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;----------------------------------------------------------------------
 INSTANCE_1 PROC NEAR
 	MOV 	CX, 14
@@ -1902,7 +1958,7 @@ INSTANCE_3 PROC NEAR
 	LEA 	SI, PATH_UDDD3
 	LEA		DI, PATH_EASY3
 	REP 	MOVSB
-	MOV 	CX, 12
+	MOV 	CX, 14
 	LEA 	SI, PATH_UDDD4
 	LEA		DI, PATH_EASY4
 	REP 	MOVSB
