@@ -38,7 +38,7 @@ The Hard level comprises 32 distinct walls having twenty-five walls to surpass t
 Still, arms and legs are still movable but the arms now have three variations each. The speed is fast.
 
 
-### Endless Level ![Workability](https://img.shields.io/badge/workability-In%Progress-yellow.svg?style=flat-square) 
+### Endless Level ![Workability](https://img.shields.io/badge/workability-In%20Progress-yellow.svg?style=flat-square) 
 
 The Endless Level is an all-out combination of the past three levels and shall end only when it is game over.
 
