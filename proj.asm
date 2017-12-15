@@ -41,136 +41,136 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	PATH_UDDU3 		DB 	'res/uddu3.txt', 00H
 	PATH_UDDU4 		DB 	'res/uddu2.txt', 00H
 	PATH_UDDU5 		DB 	'res/uddu1.txt', 00H
-	PATH_UUDU1 		DB 	'res/uudu5.txt', 00H
+	PATH_UUDU1 		DB 	'res/uudu5.txt', 00H	;UUDU - Up Up Down Up
 	PATH_UUDU2 		DB 	'res/uudu4.txt', 00H
 	PATH_UUDU3 		DB 	'res/uudu3.txt', 00H
 	PATH_UUDU4 		DB 	'res/uudu2.txt', 00H
 	PATH_UUDU5 		DB 	'res/uudu1.txt', 00H
-	PATH_DUDU1 		DB 	'res/dudu5.txt', 00H
+	PATH_DUDU1 		DB 	'res/dudu5.txt', 00H	;DUDU - Down Up Down Up
 	PATH_DUDU2 		DB 	'res/dudu4.txt', 00H
 	PATH_DUDU3 		DB 	'res/dudu3.txt', 00H
 	PATH_DUDU4 		DB 	'res/dudu2.txt', 00H
 	PATH_DUDU5 		DB 	'res/dudu1.txt', 00H
 
-	PATH_DDUD1 		DB 	'res/ddud5.txt', 00H	
+	PATH_DDUD1 		DB 	'res/ddud5.txt', 00H	;DDUD - Down Down Up Down	
 	PATH_DDUD2 		DB 	'res/ddud4.txt', 00H
 	PATH_DDUD3 		DB 	'res/ddud3.txt', 00H
 	PATH_DDUD4 		DB 	'res/ddud2.txt', 00H
 	PATH_DDUD5 		DB 	'res/ddud1.txt', 00H
-	PATH_UDUD1 		DB 	'res/udud5.txt', 00H
+	PATH_UDUD1 		DB 	'res/udud5.txt', 00H	;UDUD - Up Down Up Down
 	PATH_UDUD2 		DB 	'res/udud4.txt', 00H
 	PATH_UDUD3 		DB 	'res/udud3.txt', 00H
 	PATH_UDUD4 		DB 	'res/udud2.txt', 00H
 	PATH_UDUD5 		DB 	'res/udud1.txt', 00H
-	PATH_UUUD1 		DB 	'res/uuud5.txt', 00H
+	PATH_UUUD1 		DB 	'res/uuud5.txt', 00H	;UUUD - Up Up Up Down
 	PATH_UUUD2 		DB 	'res/uuud4.txt', 00H
 	PATH_UUUD3 		DB 	'res/uuud3.txt', 00H
 	PATH_UUUD4 		DB 	'res/uuud2.txt', 00H
 	PATH_UUUD5 		DB 	'res/uuud1.txt', 00H
-	PATH_DUUD1 		DB 	'res/duud5.txt', 00H
+	PATH_DUUD1 		DB 	'res/duud5.txt', 00H	;DUUD - Down Up Up Down
 	PATH_DUUD2 		DB 	'res/duud4.txt', 00H
 	PATH_DUUD3 		DB 	'res/duud3.txt', 00H
 	PATH_DUUD4 		DB 	'res/duud2.txt', 00H
 	PATH_DUUD5 		DB 	'res/duud1.txt', 00H
 
-	PATH_DDUU1 		DB 	'res/dduu5.txt', 00H
+	PATH_DDUU1 		DB 	'res/dduu5.txt', 00H	;DDUU - Down Down Up Up
 	PATH_DDUU2 		DB 	'res/dduu4.txt', 00H
 	PATH_DDUU3 		DB 	'res/dduu3.txt', 00H
 	PATH_DDUU4 		DB 	'res/dduu2.txt', 00H
 	PATH_DDUU5 		DB 	'res/dduu1.txt', 00H
-	PATH_UDUU1 		DB 	'res/uduu5.txt', 00H
+	PATH_UDUU1 		DB 	'res/uduu5.txt', 00H	;UDUU - Up Down Up Up
 	PATH_UDUU2 		DB 	'res/uduu4.txt', 00H
 	PATH_UDUU3 		DB 	'res/uduu3.txt', 00H
 	PATH_UDUU4 		DB 	'res/uduu2.txt', 00H
 	PATH_UDUU5 		DB 	'res/uduu1.txt', 00H
-	PATH_UUUU1 		DB 	'res/uuuu5.txt', 00H
+	PATH_UUUU1 		DB 	'res/uuuu5.txt', 00H	;UUUU - Up Up Up Up
 	PATH_UUUU2 		DB 	'res/uuuu4.txt', 00H
 	PATH_UUUU3 		DB 	'res/uuuu3.txt', 00H
 	PATH_UUUU4 		DB 	'res/uuuu2.txt', 00H
 	PATH_UUUU5 		DB 	'res/uuuu1.txt', 00H
-	PATH_DUUU1 		DB 	'res/duuu5.txt', 00H
+	PATH_DUUU1 		DB 	'res/duuu5.txt', 00H	;DUUU - Down Up Up Up
 	PATH_DUUU2 		DB 	'res/duuu4.txt', 00H
 	PATH_DUUU3 		DB 	'res/duuu3.txt', 00H
 	PATH_DUUU4 		DB 	'res/duuu2.txt', 00H
 	PATH_DUUU5 		DB 	'res/duuu1.txt', 00H
 
-	PATH_BBDD1 		DB 	'res/BBdd5.txt', 00H
+	PATH_BBDD1 		DB 	'res/BBdd5.txt', 00H	;BBDD - Below Below Down Down
 	PATH_BBDD2 		DB 	'res/BBdd4.txt', 00H
 	PATH_BBDD3 		DB 	'res/BBdd3.txt', 00H
 	PATH_BBDD4 		DB 	'res/BBdd2.txt', 00H
 	PATH_BBDD5 		DB 	'res/BBdd1.txt', 00H
-	PATH_BBUD1 		DB 	'res/BBud5.txt', 00H
+	PATH_BBUD1 		DB 	'res/BBud5.txt', 00H	;BBUD - Beloe Below Up Down
 	PATH_BBUD2 		DB 	'res/BBud4.txt', 00H
 	PATH_BBUD3 		DB 	'res/BBud3.txt', 00H
 	PATH_BBUD4 		DB 	'res/BBud2.txt', 00H
 	PATH_BBUD5 		DB 	'res/BBud1.txt', 00H
-	PATH_BBUU1 		DB 	'res/BBuu5.txt', 00H
+	PATH_BBUU1 		DB 	'res/BBuu5.txt', 00H	;BBUU - Below Below Up Up
 	PATH_BBUU2 		DB 	'res/BBuu4.txt', 00H
 	PATH_BBUU3 		DB 	'res/BBuu3.txt', 00H
 	PATH_BBUU4 		DB 	'res/BBuu2.txt', 00H
 	PATH_BBUU5 		DB 	'res/BBuu1.txt', 00H
-	PATH_BBDU1 		DB 	'res/BBdu5.txt', 00H
+	PATH_BBDU1 		DB 	'res/BBdu5.txt', 00H	;BBDU - Below Below Down Up
 	PATH_BBDU2 		DB 	'res/BBdu4.txt', 00H
 	PATH_BBDU3 		DB 	'res/BBdu3.txt', 00H
 	PATH_BBDU4 		DB 	'res/BBdu2.txt', 00H
 	PATH_BBDU5 		DB 	'res/BBdu1.txt', 00H
 
-	PATH_BDUD1 		DB 	'res/BDud5.txt', 00H
-	PATH_BDUD2 		DB 	'res/BDud4.txt', 00H
+	PATH_BDUD1 		DB 	'res/BDud5.txt', 00H	;BDUD - Below Down Up Down
+	PATH_BDUD2 		DB 	'res/BDud4.txt', 00H	
 	PATH_BDUD3 		DB 	'res/BDud3.txt', 00H
 	PATH_BDUD4 		DB 	'res/BDud2.txt', 00H
 	PATH_BDUD5 		DB 	'res/BDud1.txt', 00H
-	PATH_BDUU1 		DB 	'res/BDuu5.txt', 00H
+	PATH_BDUU1 		DB 	'res/BDuu5.txt', 00H	;BDUU - Below Down Up Up
 	PATH_BDUU2 		DB 	'res/BDuu4.txt', 00H
 	PATH_BDUU3 		DB 	'res/BDuu3.txt', 00H
 	PATH_BDUU4 		DB 	'res/BDuu2.txt', 00H
 	PATH_BDUU5 		DB 	'res/BDuu1.txt', 00H
 
-	PATH_BUUD1 		DB 	'res/BUUD5.txt', 00H
+	PATH_BUUD1 		DB 	'res/BUUD5.txt', 00H	;BUUD - Below Up UP Down
 	PATH_BUUD2 		DB 	'res/BUUD4.txt', 00H
 	PATH_BUUD3 		DB 	'res/BUUD3.txt', 00H
 	PATH_BUUD4 		DB 	'res/BUUD2.txt', 00H
 	PATH_BUUD5 		DB 	'res/BUUD1.txt', 00H
-	PATH_BUDU1 		DB 	'res/BUDU5.txt', 00H
+	PATH_BUDU1 		DB 	'res/BUDU5.txt', 00H	;BUDU - Below Up Down Up
 	PATH_BUDU2 		DB 	'res/BUDU4.txt', 00H
 	PATH_BUDU3 		DB 	'res/BUDU3.txt', 00H
 	PATH_BUDU4 		DB 	'res/BUDU2.txt', 00H
 	PATH_BUDU5 		DB 	'res/BUDU1.txt', 00H
 
-	PATH_DBUU1 		DB 	'res/DBUU5.txt', 00H
+	PATH_DBUU1 		DB 	'res/DBUU5.txt', 00H	;DBUU - Down Below Up Up
 	PATH_DBUU2 		DB 	'res/DBUU4.txt', 00H
 	PATH_DBUU3 		DB 	'res/DBUU3.txt', 00H
 	PATH_DBUU4 		DB 	'res/DBUU2.txt', 00H
 	PATH_DBUU5 		DB 	'res/DBUU1.txt', 00H
-	PATH_DBDU1 		DB 	'res/DBDU5.txt', 00H
+	PATH_DBDU1 		DB 	'res/DBDU5.txt', 00H 	;DBDU - Down Below Down Up
 	PATH_DBDU2 		DB 	'res/DBDU4.txt', 00H
 	PATH_DBDU3 		DB 	'res/DBDU3.txt', 00H
 	PATH_DBDU4 		DB 	'res/DBDU2.txt', 00H
 	PATH_DBDU5 		DB 	'res/DBDU1.txt', 00H
 
-	PATH_UBDU1 		DB 	'res/UBDU5.txt', 00H
+	PATH_UBDU1 		DB 	'res/UBDU5.txt', 00H	;UBDU - Up Below Down Up
 	PATH_UBDU2 		DB 	'res/UBDU4.txt', 00H
 	PATH_UBDU3 		DB 	'res/UBDU3.txt', 00H
 	PATH_UBDU4 		DB 	'res/UBDU2.txt', 00H
-	PATH_UBDU5 		DB 	'res/UBDU1.txt', 00H
-	PATH_UBUD1 		DB 	'res/UBUD5.txt', 00H
+	PATH_UBDU5 		DB 	'res/UBDU1.txt', 00H	
+	PATH_UBUD1 		DB 	'res/UBUD5.txt', 00H	;UBUD - Up Below Up Down
 	PATH_UBUD2 		DB 	'res/UBUD4.txt', 00H
 	PATH_UBUD3 		DB 	'res/UBUD3.txt', 00H
 	PATH_UBUD4 		DB 	'res/UBUD2.txt', 00H
 	PATH_UBUD5 		DB 	'res/UBUD1.txt', 00H
 
-	PATH_GAMEOVER 	DB 	'res/over.txt', 00H
-	PATH_EASY 		DB 	'res/easy.txt', 00H
-	PATH_MEDIUM		DB 	'res/medium.txt', 00h
-	PATH_HARD		DB 	'res/hard.txt', 00h
-	PATH_ENDLESS	DB 	'res/endls.txt', 00h
-	PATH_EASY1 		DB 	15 DUP (00H)
+	PATH_GAMEOVER 		DB 	'res/over.txt', 00H	;Game Over Text File
+	PATH_EASY 		DB 	'res/easy.txt', 00H	;Easy Text File
+	PATH_MEDIUM		DB 	'res/medium.txt', 00h	;Medium Text File
+	PATH_HARD		DB 	'res/hard.txt', 00h	;Hard Text File
+	PATH_ENDLESS		DB 	'res/endls.txt', 00h	;Endless Text File
+	PATH_EASY1 		DB 	15 DUP (00H)		;Containers
 	PATH_EASY2 		DB 	15 DUP (00H)
 	PATH_EASY3		DB 	15 DUP (00H)
 	PATH_EASY4 		DB 	15 DUP (00H)
 	PATH_EASY5 		DB 	15 DUP (00H)
-	PATH_CLEAR		DB 	15 DUP (00H), '$'
-	LEVEL_STATUS 	DB 	15 DUP ('$')
+	PATH_CLEAR		DB 	15 DUP (00H), '$'	;Clear String
+	LEVEL_STATUS 	DB 	15 DUP ('$')			;Status Bar
 	HANDLE_LOADING	DW 	?
 	HANDLE_HISCORE 	DW 	?
 	HANDLE_HISCORE2	DW 	?
@@ -178,7 +178,7 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	MENU_STR 		DB 	7500 DUP('$'), '$'
 	PLAY_STR		DB 	7500 DUP('$'), '$'
 
-	PROMPT_ERROR1	DB 	"Error in opening file.", '$'
+	PROMPT_ERROR1	DB 	"Error in opening file.", '$'	;Error Handling
 	PROMPT_ERROR2	DB 	"Error reading from file.", '$'
 	PROMPT_ERROR3 	DB	"No record read from file.", '$'
 
