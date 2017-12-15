@@ -94,6 +94,38 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	PATH_DUUU4 		DB 	'res/duuu2.txt', 00H
 	PATH_DUUU5 		DB 	'res/duuu1.txt', 00H
 
+	PATH_BBDD1 		DB 	'res/BBdd5.txt', 00H
+	PATH_BBDD2 		DB 	'res/BBdd4.txt', 00H
+	PATH_BBDD3 		DB 	'res/BBdd3.txt', 00H
+	PATH_BBDD4 		DB 	'res/BBdd2.txt', 00H
+	PATH_BBDD5 		DB 	'res/BBdd1.txt', 00H
+	PATH_BBUD1 		DB 	'res/BBud5.txt', 00H
+	PATH_BBUD2 		DB 	'res/BBud4.txt', 00H
+	PATH_BBUD3 		DB 	'res/BBud3.txt', 00H
+	PATH_BBUD4 		DB 	'res/BBud2.txt', 00H
+	PATH_BBUD5 		DB 	'res/BBud1.txt', 00H
+	PATH_BBUU1 		DB 	'res/BBuu5.txt', 00H
+	PATH_BBUU2 		DB 	'res/BBuu4.txt', 00H
+	PATH_BBUU3 		DB 	'res/BBuu3.txt', 00H
+	PATH_BBUU4 		DB 	'res/BBuu2.txt', 00H
+	PATH_BBUU5 		DB 	'res/BBuu1.txt', 00H
+	PATH_BBDU1 		DB 	'res/BBdu5.txt', 00H
+	PATH_BBDU2 		DB 	'res/BBdu4.txt', 00H
+	PATH_BBDU3 		DB 	'res/BBdu3.txt', 00H
+	PATH_BBDU4 		DB 	'res/BBdu2.txt', 00H
+	PATH_BBDU5 		DB 	'res/BBdu1.txt', 00H
+
+	PATH_BDUD1 		DB 	'res/BDud5.txt', 00H
+	PATH_BDUD2 		DB 	'res/BDud4.txt', 00H
+	PATH_BDUD3 		DB 	'res/BDud3.txt', 00H
+	PATH_BDUD4 		DB 	'res/BDud2.txt', 00H
+	PATH_BDUD5 		DB 	'res/BDud1.txt', 00H
+	PATH_BDUU1 		DB 	'res/BDuu5.txt', 00H
+	PATH_BDUU2 		DB 	'res/BDuu4.txt', 00H
+	PATH_BDUU3 		DB 	'res/BDuu3.txt', 00H
+	PATH_BDUU4 		DB 	'res/BDuu2.txt', 00H
+	PATH_BDUU5 		DB 	'res/BDuu1.txt', 00H
+
 	PATH_GAMEOVER 	DB 	'res/over.txt', 00H
 	PATH_EASY 		DB 	'res/easy.txt', 00H
 	PATH_MEDIUM		DB 	'res/medium.txt', 00h
@@ -107,10 +139,10 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	PATH_CLEAR		DB 	15 DUP (00H), '$'
 	LEVEL_STATUS 	DB 	15 DUP ('$')
 	HANDLE_LOADING	DW 	?
+	HANDLE_HISCORE 	DW 	?
 	LOAD_STR 		DB 	7500 DUP('$'), '$'
 	MENU_STR 		DB 	7500 DUP('$'), '$'
 	PLAY_STR		DB 	7500 DUP('$'), '$'
-  	LOAD_STR2    	DB  2 DUP('$'), '$'
 
 	PROMPT_ERROR1	DB 	"Error in opening file.", '$'
 	PROMPT_ERROR2	DB 	"Error reading from file.", '$'
@@ -126,21 +158,25 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	STATUS_GM		DB 	0
 	CURR_STATE 		DB 	1
 	GAME_STATUS 	DB 	1
-	INTERVAL 		DW 	2500
-	LOOPS 			DB 	5
+	INTERVAL 		DW 	1500
+	LOOPS 			DW 	5
 	DIVISOR 		DW 	4
 	BACKGROUND_G 	DB 	03H
 	BACKGROUND_P 	DB 	73H
+	HI_SCORE 		DB 	3 DUP (' '), '$'
+	SCORE 			DB 	3 DUP (' '), '$'
 
 	PRN 			DW 	1
+	PSEUDO 			DW 	1
 
 	LOADING_1 		DB 	"Loading 'res\easy\...'", '$'
 	LOADING_2 		DB 	"Loading 'res\medium\...'", '$'
 	LOADING_3 		DB 	"Loading 'res\hard\...'", '$'	
 	LOADING_4 		DB 	"Loading 'res\highscore\...'", '$'
 	LOADING_5 		DB 	"Initializing...", '$'
-	SCORE_TXT		DB  "SCORE: 00", '$'
-	HISCORE_TXT 	DB 	"HI: 00", '$'
+	NEW_HIGH_SCORE 	DB 	"YOU SET A NEW HIGH SCORE!", '$'
+	SCORE_TXT		DB  "SCORE: 000", '$'
+	HISCORE_TXT 	DB 	"HI-SCORE: 000", '$'
 	LEVEL_EASY 		DB 	"LEVEL: EASY", '$'
 	LEVEL_MEDIUM 	DB 	"LEVEL: MEDIUM", '$'
 	LEVEL_HARD 		DB 	"LEVEL: HARD", '$'
@@ -186,14 +222,19 @@ GOTO_HIGHS:
 	CALL 	HIGHS
 
 GOTO_PLAY:
-	MOV 	LOOPS, 3
+	MOV 	LOOPS, 10
 	MOV 	INTERVAL, 1500
+	MOV 	GAME_STATUS, 1
 	MOV 	STATUS_GM, 1
+	MOV 	CURR_STATE, 1
 	MOV 	DIVISOR, 4
+	MOV 	STATUS, 1
 	LEA 	SI, SCORE_TXT
 	ADD 	SI, 7
 	MOV 	AH, 48
 	MOV 	[SI], AH
+	INC 	SI
+	MOV 	[SI], AH 
 	INC 	SI
 	MOV 	[SI], AH 
 	MOV 	GAME_STATUS, 2
@@ -209,7 +250,6 @@ GOTO_PLAY:
 	LEA 	DX, PATH_EASY
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
-	
 	;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
@@ -227,8 +267,8 @@ GOTO_PLAY:
 	CALL 	_DELAY
 	CALL 	PLAY
 	
-	MOV 	INTERVAL, 1500
-	MOV 	LOOPS, 5
+	MOV 	INTERVAL, 1000
+	MOV 	LOOPS, 14
 	MOV 	DIVISOR, 16
 	MOV 	BACKGROUND_G, 0EH
 	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
@@ -241,9 +281,6 @@ GOTO_PLAY:
 	LEA 	DX, PATH_MEDIUM
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
-	JMP 	CONT_READ_MED
-
-CONT_READ_MED:
 	;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
@@ -262,9 +299,9 @@ CONT_READ_MED:
 	CALL 	_DELAY
 	CALL 	PLAY
 
-	MOV 	LOOPS, 5
+	MOV 	LOOPS, 24
 	MOV 	STATUS_GM, 3
-	MOV 	INTERVAL, 1250
+	MOV 	INTERVAL, 800
 	MOV 	BACKGROUND_G, 06H
 	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
 	MOV 	CX, 0000H  				;from top, leftmost
@@ -300,7 +337,9 @@ GOTO_PLAY_BR:
 	JMP 	GOTO_PLAY
 
 GO_ENDLESS:
-	MOV 	LOOPS, 100
+	MOV 	INTERVAL, 800
+	MOV 	STATUS_GM, 4
+	MOV 	LOOPS, 950
 	MOV 	BACKGROUND_G, 05H
 	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
 	MOV 	CX, 0000H  				;from top, leftmost
@@ -321,8 +360,7 @@ GO_ENDLESS:
 	INT 	21H
 	LEA 	SI, PLAY_STR
 	CALL 	OUTPUT_EXT
-	MOV 	STATUS_GM, 4
-	MOV 	CX, 14
+	MOV 	CX, 15
 	LEA 	SI, LEVEL_ENDLESS
 	LEA 	DI, LEVEL_STATUS
 	REP 	MOVSB
@@ -426,15 +464,6 @@ DISPLAY_LOADING3:
 	CALL 	_DELAY
 	JMP 	BACK
 
-DISPLAY_LOADING4:
-	LEA 	DX, LOADING_4
-	MOV 	AH, 09H
-	INT 	21H
-	MOV 	BP, 2 					
-	MOV 	SI, 2 					
-	CALL 	_DELAY
-	JMP 	BACK
-
 DISPLAY_LOADING5:
 	LEA 	DX, LOADING_5
 	MOV 	AH, 09H
@@ -444,9 +473,45 @@ DISPLAY_LOADING5:
 	CALL 	_DELAY
 	JMP 	BACK
 
+DISPLAY_LOADING4:
+	CMP 	LOADING_BAR, 65
+	JNE 	CONT_LOAD
+	MOV 	AH, 3DH
+	MOV 	AL, 2
+	LEA 	DX, PATH_SCORE
+	INT 	21H
+	JC 		__TERMINATE
+	MOV 	HANDLE_HISCORE, AX
+	MOV 	AH, 3FH
+	MOV 	BX, HANDLE_HISCORE
+	MOV 	CX, 3
+	LEA 	DX, HI_SCORE
+	INT 	21H
+	JC 		__TERMINATE
+	MOV 	CX, 3
+	LEA 	SI, HISCORE_TXT
+	LEA 	DI, HI_SCORE
+	ADD 	SI, 10
+PARSE_HISCORE:
+	MOV 	AH, [DI]
+	MOV 	[SI], AH
+	INC 	SI
+	INC 	DI
+	LOOP 	PARSE_HISCORE
+	JMP 	CONT_LOAD
+__TERMINATE:
+	CALL 	_TERMINATE
+CONT_LOAD:
+	LEA 	DX, LOADING_4
+	MOV 	AH, 09H
+	INT 	21H
+	MOV 	BP, 2 					
+	MOV 	SI, 2 					
+	CALL 	_DELAY
+	JMP 	BACK
+
 LOADPAGE ENDP
 ;----------------------------------------------------------------------
-
 HOWTO PROC NEAR
 	MOV   	BH, 0EH         
 	MOV   	CX, 0000H       
@@ -524,29 +589,15 @@ HIGHS PROC NEAR
   	MOV   	BX, HANDLE_LOADING
   	INT   	21H
 
-	;open file
-  	MOV   	AH, 3DH
-  	MOV   	AL, 00
-  	LEA   	DX, PATH_SCORE
-  	INT   	21H
-  	MOV   	HANDLE_LOADING, AX
-
-  	;read file
-  	MOV   	AH, 3FH
-  	MOV   	BX, HANDLE_LOADING
-  	MOV   	CX, 2
-  	LEA   	DX, LOAD_STR2
-  	INT   	21H
-
   	MOV 	BH, 8EH 
   	MOV 	CX, 1025H
-  	MOV 	DX, 1026H
+  	MOV 	DX, 1027H
   	CALL 	_CLEAR_SCREEN
 
   	MOV 	DX, 1025H
   	CALL  	_SET_CURSOR
 
-  	LEA 	SI, LOAD_STR2
+  	LEA 	SI, HI_SCORE
   	CALL 	OUTPUT_EXT
 
   	MOV 	ENTER, 0
@@ -625,42 +676,22 @@ PLAY PROC NEAR
 PLAYING:
 	CMP 	STATUS_GM, 4
 	JNE		RANDOM_GENERATOR
-	CMP 	INTERVAL, 100
+	CMP 	INTERVAL, 350
 	JBE 	RANDOM_GENERATOR
 	SUB 	INTERVAL, 20
-
-	MOV 	CX, 14
-	LEA 	DI, PATH_EASY1
-	LEA 	SI, PATH_CLEAR
-	REP 	MOVSB
-	MOV 	CX, 14
-	LEA 	DI, PATH_EASY2
-	LEA 	SI, PATH_CLEAR
-	REP 	MOVSB
-	MOV 	CX, 14
-	LEA 	DI, PATH_EASY3
-	LEA 	SI, PATH_CLEAR
-	REP 	MOVSB
-	MOV 	CX, 14
-	LEA 	DI, PATH_EASY4
-	LEA 	SI, PATH_CLEAR
-	REP 	MOVSB
-	MOV 	CX, 14
-	LEA 	DI, PATH_EASY5
-	LEA 	SI, PATH_CLEAR
-	REP 	MOVSB
 
 RANDOM_GENERATOR:
 	MOV     AH, 00h   				; interrupt to get system timer in CX:DX 
 	INT     1AH
-	MOV     [PRN], DX
+	MOV     [PSEUDO], DX
     MOV     AX, 25173          		; LCG Multiplier
-    MUL     word ptr [PRN]     		; DX:AX = LCG multiplier * seed
+    MUL     word ptr [PSEUDO]     		; DX:AX = LCG multiplier * seed
     ADD     AX, 13849          		; Add LCG increment value
-    MOV     [PRN], AX          		; Update seed = return value
+    MOV     [PSEUDO], AX          		; Update seed = return value
 	XOR     DX, DX
 	MOV     CX, DIVISOR    
 	DIV     CX        ; here dx contains the remainder - from 0 to 4
+
 	CMP 	PRN, DX
 	JE 		RANDOM_GENERATOR
 	MOV 	PRN, DX
@@ -798,8 +829,8 @@ DISPLAY_ERROR1:
 	LEA 	DX, PATH_EASY1
 	MOV 	AH, 09H
 	INT 	21H
-;	JMP 	MOVE_WALL
-	CALL 	_TERMINATE
+	JMP 	RANDOM_GENERATOR
+;	CALL 	_TERMINATE
 
 DISPLAY_ERROR2:
 	LEA 	DX, PROMPT_ERROR2
@@ -968,7 +999,7 @@ GAME_OVER:
 
 INC_SCORE:
 	LEA 	SI, SCORE_TXT
-	ADD 	SI, 8
+	ADD 	SI, 9
 	MOV 	AH, [SI]
 	INC 	AH
 	CMP 	AH, 58
@@ -985,6 +1016,16 @@ TENS_INC:
 	DEC 	SI
 	MOV 	AH, [SI]
 	INC 	AH
+	CMP 	AH, 58
+	JE 		HUN_INC
+	MOV 	[SI], AH
+	JMP 	DEC_LOOPS
+HUN_INC:
+	MOV 	AH, 48
+	MOV 	[SI], AH
+	DEC 	SI
+	MOV 	AH, [SI]
+	INC 	AH 
 	MOV 	[SI], AH
 	JMP 	DEC_LOOPS
 
@@ -1016,11 +1057,6 @@ _DELAY ENDP
 ;----------------------------------------------------------------------
 _DELAYSEC PROC	NEAR
 DELAY3:
-	;MOV 	DX, 0101H
-	;CALL 	_SET_CURSOR
-	;LEA  	DX, PATH_EASY1
-	;MOV 	AH, 09H
-	;INT 	21H
 	MOV 	DX, 0002H
 	CALL 	_SET_CURSOR
 	LEA 	DX, SCORE_TXT
@@ -1380,7 +1416,7 @@ _TERMINATE PROC
 	MOV 	BH, 07H 
 	MOV 	CX, 0000H
 	MOV 	DX, 184FH
-	CALL 	_CLEAR_SCREEN
+;	CALL 	_CLEAR_SCREEN
 
 	MOV		AH, 4CH
 	INT		21H
@@ -1853,49 +1889,6 @@ __MOV_POINTERS:
 	JMP 	__LEAVETHIS2
 
 _GET_KEY_PL	ENDP
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ;----------------------------------------------------------------------
 INSTANCE_1 PROC NEAR
 	MOV 	CX, 14
@@ -2494,6 +2487,150 @@ INSTANCE_16 PROC NEAR
 	RET 
 INSTANCE_16 ENDP
 ;----------------------------------------------------------------------
+INSTANCE_17 PROC NEAR
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDD1
+	LEA		DI, PATH_EASY1
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDD2
+	LEA		DI, PATH_EASY2
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDD3
+	LEA		DI, PATH_EASY3
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDD4
+	LEA		DI, PATH_EASY4
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDD5
+	LEA		DI, PATH_EASY5
+	REP 	MOVSB
+	RET 
+INSTANCE_17 ENDP
+;----------------------------------------------------------------------
+INSTANCE_18 PROC NEAR
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUD1
+	LEA		DI, PATH_EASY1
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUD2
+	LEA		DI, PATH_EASY2
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUD3
+	LEA		DI, PATH_EASY3
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUD4
+	LEA		DI, PATH_EASY4
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUD5
+	LEA		DI, PATH_EASY5
+	REP 	MOVSB
+	RET 
+INSTANCE_18 ENDP
+;----------------------------------------------------------------------
+INSTANCE_19 PROC NEAR
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUU1
+	LEA		DI, PATH_EASY1
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUU2
+	LEA		DI, PATH_EASY2
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUU3
+	LEA		DI, PATH_EASY3
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUU4
+	LEA		DI, PATH_EASY4
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBUU5
+	LEA		DI, PATH_EASY5
+	REP 	MOVSB
+	RET 
+INSTANCE_19 ENDP
+;----------------------------------------------------------------------
+INSTANCE_20 PROC NEAR
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU1
+	LEA		DI, PATH_EASY1
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU2
+	LEA		DI, PATH_EASY2
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU3
+	LEA		DI, PATH_EASY3
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU4
+	LEA		DI, PATH_EASY4
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU5
+	LEA		DI, PATH_EASY5
+	REP 	MOVSB
+	RET 
+INSTANCE_20 ENDP
+;----------------------------------------------------------------------
+INSTANCE_21 PROC NEAR
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU1
+	LEA		DI, PATH_EASY1
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU2
+	LEA		DI, PATH_EASY2
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU3
+	LEA		DI, PATH_EASY3
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU4
+	LEA		DI, PATH_EASY4
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU5
+	LEA		DI, PATH_EASY5
+	REP 	MOVSB
+	RET 
+INSTANCE_20 ENDP
+;----------------------------------------------------------------------
+INSTANCE_20 PROC NEAR
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU1
+	LEA		DI, PATH_EASY1
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU2
+	LEA		DI, PATH_EASY2
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU3
+	LEA		DI, PATH_EASY3
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU4
+	LEA		DI, PATH_EASY4
+	REP 	MOVSB
+	MOV 	CX, 14
+	LEA 	SI, PATH_BBDU5
+	LEA		DI, PATH_EASY5
+	REP 	MOVSB
+	RET 
+INSTANCE_20 ENDP
+;----------------------------------------------------------------------
 CHK_INS_16 PROC NEAR 
 	CMP 	RIGHT_HAND, 1
 	JNE 	_GAME_OVER6
@@ -2509,6 +2646,58 @@ CHK_INS_16 PROC NEAR
 	CALL 	GAME_OVER2
 	RET 
 CHK_INS_16 ENDP
+;----------------------------------------------------------------------
+CHK_INS_17 PROC NEAR 
+	CMP 	RIGHT_HAND, 2
+	JNE 	_GAME_OVER6
+	CMP 	LEFT_HAND, 2
+	JNE 	_GAME_OVER6
+	CMP 	RIGHT_LEG, 0
+	JNE 	_GAME_OVER6
+	CMP 	LEFT_LEG, 0
+	JNE 	_GAME_OVER6
+	RET 
+CHK_INS_17 ENDP
+;----------------------------------------------------------------------
+CHK_INS_18 PROC NEAR 
+	CMP 	RIGHT_HAND, 2
+	JNE 	_GAME_OVER10
+	CMP 	LEFT_HAND, 2
+	JNE 	_GAME_OVER10
+	CMP 	RIGHT_LEG, 1
+	JNE 	_GAME_OVER10
+	CMP 	LEFT_LEG, 0
+	JNE 	_GAME_OVER10
+	RET 
+CHK_INS_18 ENDP
+;----------------------------------------------------------------------
+CHK_INS_19 PROC NEAR 
+	CMP 	RIGHT_HAND, 2
+	JNE 	_GAME_OVER10
+	CMP 	LEFT_HAND, 2
+	JNE 	_GAME_OVER10
+	CMP 	RIGHT_LEG, 1
+	JNE 	_GAME_OVER10
+	CMP 	LEFT_LEG, 1
+	JNE 	_GAME_OVER10
+	RET 
+
+ _GAME_OVER10:
+	CALL 	GAME_OVER2
+	RET 
+CHK_INS_19 ENDP
+;----------------------------------------------------------------------
+CHK_INS_20 PROC NEAR 
+	CMP 	RIGHT_HAND, 2
+	JNE 	_GAME_OVER10
+	CMP 	LEFT_HAND, 2
+	JNE 	_GAME_OVER10
+	CMP 	RIGHT_LEG, 0
+	JNE 	_GAME_OVER10
+	CMP 	LEFT_LEG, 1
+	JNE 	_GAME_OVER10
+	RET 
+CHK_INS_20 ENDP
 ;----------------------------------------------------------------------
 GAME_OVER2 PROC NEAR
 	MOV 	GAME_STATUS, 3
@@ -2533,9 +2722,62 @@ GAME_OVER2 PROC NEAR
 	INT 	21H
 	LEA 	SI, PLAY_STR
 	CALL 	OUTPUT_EXT
+
+	MOV 	DX, 0622H
+	CALL 	_SET_CURSOR
+	LEA 	DX, SCORE_TXT
+	MOV 	AH, 09H
+	INT 	21H
+	LEA 	SI, SCORE_TXT
+	LEA 	DI, HISCORE_TXT
+	ADD 	SI, 7
+	ADD 	DI, 10
+	MOV 	CX, 3
+_HIGH_SCORE:
+	MOV 	AH, [SI]
+	MOV 	AL, [DI]
+	CMP 	AH, AL
+	JA 		__NEW_HIGH
+	JB 		__NOT_NEW
+	INC 	SI
+	INC 	DI
+	LOOP 	_HIGH_SCORE
+
+__NOT_NEW:
+	MOV 	DX, 0521H
+	CALL 	_SET_CURSOR
+	LEA 	DX, HISCORE_TXT
+	MOV 	AH, 09H
+	INT 	21H
+	JMP 	_GAMEOVER_CONT
+
+__NEW_HIGH:
+	MOV 	DX, 0521H
+	CALL 	_SET_CURSOR
+	LEA 	DX, NEW_HIGH_SCORE
+	MOV 	AH, 09H
+	INT 	21H
+	LEA 	SI, SCORE_TXT
+	LEA 	DI, SCORE
+	ADD 	SI, 7
+	MOV 	CX, 3
+___SET_NEW_HS:
+	MOV 	AH, [SI]
+	MOV 	[DI], AH
+	INC 	SI
+	INC 	DI
+	LOOP 	___SET_NEW_HS
+	MOV 	AH, 40H
+	MOV 	BX, HANDLE_HISCORE
+	MOV 	CX, 3
+	LEA 	DX, PATH_SCORE
+	INT 	21H
+
+_GAMEOVER_CONT:
 	MOV 	BP, 50
 	MOV 	SI, 50
 	CALL 	_DELAY
+
 	CALL 	OURMAIN
 	RET
 GAME_OVER2 ENDP
