@@ -182,24 +182,24 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	PROMPT_ERROR2	DB 	"Error reading from file.", '$'
 	PROMPT_ERROR3 	DB	"No record read from file.", '$'
 
-	CHILD_PROTECTION DB 0
-	STATUS			DB	1 				;1 for PLAY, 2 for HOW TO PLAY, 3 for HIGHSCORE, 4 for EXIT
-	LEFT_HAND		DB 	0
+	CHILD_PROTECTION DB 0				;Until 7th Iteration
+	STATUS			DB	1 		;1 for PLAY, 2 for HOW TO PLAY, 3 for HIGHSCORE, 4 for EXIT
+	LEFT_HAND		DB 	0		
 	RIGHT_HAND		DB	0
 	LEFT_LEG		DB 	0
 	RIGHT_LEG 		DB 	0
 	ENTER 			DB 	0
-	LOADING_BAR		DB 	5
+	LOADING_BAR		DB 	5	
 	STATUS_GM		DB 	0
 	CURR_STATE 		DB 	1
 	GAME_STATUS 	DB 	1
-	INTERVAL 		DW 	1500
+	INTERVAL 		DW 	1500		;Controls the Speed Intervals
 	LOOPS 			DW 	5
 	DIVISOR 		DW 	4
-	BACKGROUND_G 	DB 	03H
-	BACKGROUND_P 	DB 	73H
-	HI_SCORE 		DB 	3 DUP (' '), '$'
-	SCORE 			DB 	3 DUP (' '), '$'
+	BACKGROUND_G 	DB 	03H			;Game Background
+	BACKGROUND_P 	DB 	73H			;Play State Backgrounf
+	HI_SCORE 		DB 	3 DUP (' '), '$'	;High Score Container
+	SCORE 			DB 	3 DUP (' '), '$'	;Current Score Container
 
 	PRN 			DW 	1
 	PSEUDO 			DW 	1
@@ -207,12 +207,12 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	LOADING_1 		DB 	"Loading 'res\easy\...'", '$'		;for aethetic purposes
 	LOADING_2 		DB 	"Loading 'res\medium\...'", '$'		;for aethetic purposes
 	LOADING_3 		DB 	"Loading 'res\hard\...'", '$'		;for aethetic purposes
-	LOADING_4 		DB 	"Loading 'res\highscore\...'", '$'  ;for aethetic purposes
-	LOADING_5 		DB 	"Initializing...", '$'				;for aethetic purposes
-	NEW_HIGH_SCORE 	DB 	"YOU SET A NEW HIGH SCORE!", '$'	;PROMPT IN GAME OVER	
-	SCORE_TXT		DB  "SCORE: 000", '$'					;Score in game over	
+	LOADING_4 		DB 	"Loading 'res\highscore\...'", '$'  	;for aethetic purposes
+	LOADING_5 		DB 	"Initializing...", '$'			;for aethetic purposes
+	NEW_HIGH_SCORE 	DB 	"YOU SET A NEW HIGH SCORE!", '$'	        ;PROMPT IN GAME OVER	
+	SCORE_TXT		DB  "SCORE: 000", '$'				;Score in game over	
 	HISCORE_TXT 	DB 	"HI-SCORE: 000", '$'
-	LEVEL_EASY 		DB 	"LEVEL: EASY", '$'					;Status Bar Objects	
+	LEVEL_EASY 		DB 	"LEVEL: EASY", '$'			;Status Bar Objects	
 	LEVEL_MEDIUM 	DB 	"LEVEL: MEDIUM", '$'				;line 214 - 217
 	LEVEL_HARD 		DB 	"LEVEL: HARD", '$'
 	LEVEL_ENDLESS 	DB 	"LEVEL: ENDLESS", '$'
@@ -220,8 +220,7 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 ;---------------------------------------------
 .CODE
 OURMAIN PROC FAR					;Starting Main
-	
-	MOV		AX, @data				;set DS to address of code segment
+	MOV	AX, @data				;set DS to address of code segment
 	MOV 	DS, AX
 	MOV 	ES, AX
 
@@ -229,8 +228,8 @@ OURMAIN PROC FAR					;Starting Main
 	MOV 	AL, 0
 	LEA 	DX, PATH_SCORE
 	INT 	21H
-	MOV 	HANDLE_HISCORE, AX 	   ;Parsing highscore first 
-	MOV 	AH, 3FH				   ;changes every screen		
+	MOV 	HANDLE_HISCORE, AX 	              ;Parsing highscore first 
+	MOV 	AH, 3FH				      ;changes every screen		
 	MOV 	BX, HANDLE_HISCORE
 	MOV 	CX, 3
 	LEA 	DX, HI_SCORE
@@ -251,20 +250,20 @@ PARSE_HISCORE:
 	INC 	DI
 	LOOP 	PARSE_HISCORE
 
-	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
+	MOV	BH, BACKGROUND_G			;background: black, foreground: yellow
 	MOV 	CX, 0000H  				;from top, leftmost
-	MOV		DX, 184FH 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 184FH 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen
 
 	CMP 	GAME_STATUS, 2
 	JAE  	CONT_CLEAR
  	CALL	LOADPAGE				;call loadpage
 
 CONT_CLEAR:
-	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
+	MOV	BH, BACKGROUND_G		        ;background: black, foreground: yellow
 	MOV 	CX, 0000H  				;from top, leftmost
-	MOV		DX, 184FH 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 184FH 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN			        ;clear screen
 	MOV 	ENTER, 0
  	CALL 	MAINMENU				;call mainmenu
 	CMP 	STATUS, 1 				;status 1 is play
@@ -272,18 +271,18 @@ CONT_CLEAR:
 	CMP 	STATUS, 2
 	JE 		GOTO_HOWTO
 	CMP 	STATUS, 3
-	JE 		GOTO_HIGHS				;status 4 is quit\
+	JE 		GOTO_HIGHS			;status 4 is quit
 	CALL	_TERMINATE
 
 GOTO_HOWTO:
-	CALL 	HOWTO
+	CALL 	HOWTO					;When How To Play is Chosen
 
 GOTO_HIGHS:
-	CALL 	HIGHS
+	CALL 	HIGHS					;When High Score is Chosen
 
 GOTO_PLAY:
-	LEA 	SI, PATH_EASY1
-	LEA 	DI, PATH_CLEAR
+	LEA 	SI, PATH_EASY1				;When Play is chose (Opens Play State)
+	LEA 	DI, PATH_CLEAR				;Clear Path contents	
 	MOV 	CX, 14
 	REP 	MOVSB
 	LEA 	SI, PATH_EASY2
@@ -304,15 +303,15 @@ GOTO_PLAY:
 	REP 	MOVSB
 	MOV 	LOOPS, 9
 	MOV 	ENTER, 0
-	XOR 	CX, CX
-	XOR 	AX, AX
+	XOR 	CX, CX				;Set 0 to CX
+	XOR 	AX, AX				
 	XOR 	BX, BX
 	XOR 	DX, DX
 	XOR 	BP, BP 
 	XOR 	SI, SI
 	XOR 	DI, DI
-	MOV 	INTERVAL, 1500
-	MOV 	GAME_STATUS, 1
+	MOV 	INTERVAL, 1500			;Speed of walls
+	MOV 	GAME_STATUS, 1			;Resetting Variables
 	MOV 	STATUS_GM, 1
 	MOV 	CURR_STATE, 1
 	MOV 	DIVISOR, 4
@@ -326,19 +325,19 @@ GOTO_PLAY:
 	INC 	SI
 	MOV 	[SI], AH 
 	MOV 	GAME_STATUS, 2
-	MOV 	BACKGROUND_G, 0AH
+	MOV 	BACKGROUND_G, 0AH		;background: black, foreground: green
 	MOV 	BACKGROUND_P, 7AH
-	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
-	MOV 	CX, 0000H  				;from top, leftmost
-	MOV		DX, 184FH 				;to bottom, rightmost
+	MOV	BH, BACKGROUND_G		
+	MOV 	CX, 0000H  			;from top, leftmost
+	MOV	DX, 184FH 			;to bottom, rightmost
 	CALL 	_CLEAR_SCREEN
-	;open file
+						;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_EASY
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
-	;read file
+						;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
@@ -355,21 +354,21 @@ GOTO_PLAY:
 	CALL 	_DELAY
 	CALL 	PLAY
 	
-	MOV 	INTERVAL, 1000
+	MOV 	INTERVAL, 1000			;Change Speed
 	MOV 	LOOPS, 24
 	MOV 	DIVISOR, 16
 	MOV 	BACKGROUND_G, 0EH
-	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
-	MOV 	CX, 0000H  				;from top, leftmost
-	MOV		DX, 184FH 				;to bottom, rightmost
+	MOV	BH, BACKGROUND_G		;background: black, foreground: yellow
+	MOV 	CX, 0000H  			;from top, leftmost
+	MOV	DX, 184FH 			;to bottom, rightmost
 	CALL 	_CLEAR_SCREEN
-	;open file
+						;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_MEDIUM
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
-	;read file
+						;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
@@ -392,18 +391,18 @@ GOTO_PLAY:
 	MOV 	INTERVAL, 800
 	MOV 	DIVISOR, 18
 	MOV 	BACKGROUND_G, 06H
-	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
-	MOV 	CX, 0000H  				;from top, leftmost
-	MOV		DX, 184FH 				;to bottom, rightmost
+	MOV	BH, BACKGROUND_G		;background: black, foreground: brown
+	MOV 	CX, 0000H  			;from top, leftmost
+	MOV	DX, 184FH 			;to bottom, rightmost
 	CALL 	_CLEAR_SCREEN
-	;open file
+						;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_HARD
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
 
-	;read file
+						;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
@@ -420,28 +419,28 @@ GOTO_PLAY:
 	CALL 	_DELAY
 	CALL 	PLAY
 
-	JMP 	GO_ENDLESS
+	JMP 	GO_ENDLESS			
 
 GOTO_PLAY_BR:
-	JMP 	GOTO_PLAY
+	JMP 	GOTO_PLAY			;Bridge
 
 GO_ENDLESS:
 	MOV 	INTERVAL, 800
 	MOV 	STATUS_GM, 4
 	MOV 	LOOPS, 950
 	MOV 	BACKGROUND_G, 05H
-	MOV		BH, BACKGROUND_G		;background: black, foreground: orange
-	MOV 	CX, 0000H  				;from top, leftmost
-	MOV		DX, 184FH 				;to bottom, rightmost
+	MOV	BH, BACKGROUND_G 		;background: black, foreground: orange
+	MOV 	CX, 0000H  			;from top, leftmost
+	MOV	DX, 184FH 			;to bottom, rightmost
 	CALL 	_CLEAR_SCREEN
-	;open file
+						;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_ENDLESS
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
 
-	;read file
+						;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
@@ -461,72 +460,72 @@ GO_ENDLESS:
 OURMAIN ENDP 
 ;----------------------------------------------------------------------
 
-LOADPAGE PROC NEAR 						;When Screen Loads this is the process 
-										;open file
+LOADPAGE PROC NEAR 				;When Screen Loads this is the process 
+						;open file
 	MOV 	AH, 3DH						
 	MOV 	AL, 00
 	LEA 	DX, PATH_LOADING		
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
 
-										;read file
+						;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
 	LEA 	DX, LOAD_STR
 	INT 	21H
 
-										;set cursor to the upperleftmost
+						;set cursor to the upperleftmost
 	MOV 	DL, 0H
 	MOV 	DH, 0
 	CALL 	_SET_CURSOR
 
-										;printing the file
+						;printing the file
 	LEA 	SI, LOAD_STR
 	CALL 	OUTPUT_EXT
 
 LOADING:
-	MOV 	DH, 21 					;21 is the column for the loading pane
+	MOV 	DH, 21 				;21 is the column for the loading pane
 	MOV 	DL, LOADING_BAR			;LOADING_BAR is the row
 	CALL 	_SET_CURSOR
 
-	MOV 	DX, 219					;the concrete block
-	MOV 	AH, 02H 				;printing
+	MOV 	DX, 219				;the concrete block
+	MOV 	AH, 02H 			;printing
 	INT 	21H
 
-	MOV 	DH, 19 					;for the string
+	MOV 	DH, 19 				;for the string
 	MOV 	DL, 15
 	CALL 	_SET_CURSOR
 
-	MOV		BH, BACKGROUND_G 		;background: black, foreground: orange
-	MOV 	CX, 1301H  				;from top, leftmost
-	MOV		DX, 134DH 				;to bottom, rightmost
+	MOV	BH, BACKGROUND_G 		;background: black, foreground: orange
+	MOV 	CX, 1301H  			;from top, leftmost
+	MOV	DX, 134DH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen
 
-									;the loading systems
+						;the loading systems
 	CMP 	LOADING_BAR, 17
-	JB 		DISPLAY_LOADING1
+	JB 	DISPLAY_LOADING1
 	CMP 	LOADING_BAR, 30
-	JB 		DISPLAY_LOADING2
+	JB 	DISPLAY_LOADING2
 	CMP 	LOADING_BAR, 60
-	JB 		DISPLAY_LOADING3
-	CMP		LOADING_BAR, 66
-	JB 		DISPLAY_LOADING4
+	JB 	DISPLAY_LOADING3
+	CMP	LOADING_BAR, 66
+	JB 	DISPLAY_LOADING4
 	CMP 	LOADING_BAR, 73
-	JB 		DISPLAY_LOADING5
+	JB 	DISPLAY_LOADING5
 
 BACK:
-	INC 	LOADING_BAR				;incrementing loading bar
+	INC 	LOADING_BAR			;incrementing loading bar
 	CMP 	LOADING_BAR, 73
 	JNE 	LOADING
 
-									;close file handle of input
+						;close file handle of input
 	MOV 	AH, 3EH
 	MOV 	BX, HANDLE_LOADING
 	INT 	21H
 	RET
 
-DISPLAY_LOADING1:
+DISPLAY_LOADING1:				;Displays Aesthetic thinggies in the loading page
 	LEA 	DX, LOADING_1
 	MOV 	AH, 09H
 	INT 	21H
@@ -579,14 +578,14 @@ HOWTO PROC NEAR						;Called when HS is chosen in the Menu
 	MOV   	DX, 184FH       
 	CALL  	_CLEAR_SCREEN
 
-									;open file
+							;open file
 	MOV   	AH, 3DH
 	MOV   	AL, 00
 	LEA   	DX, PATH_HOWPAGE
 	INT  	21H
 	MOV   	HANDLE_LOADING, AX
 
-									;read file
+							;read file
 	MOV   	AH, 3FH
 	MOV   	BX, HANDLE_LOADING
 	MOV   	CX, 7500
@@ -598,7 +597,7 @@ HOWTO PROC NEAR						;Called when HS is chosen in the Menu
 	CALL  	_SET_CURSOR
 
 	MOV 	GAME_STATUS, 5
-									;print
+							;print
 	LEA   	SI, LOAD_STR
 	CALL  	OUTPUT_EXT
 	MOV 	ENTER, 0
@@ -609,7 +608,7 @@ ITERATE_HOWTO:						;Blinks the high score
  	CMP 	ENTER, 1
  	JNE 	ITERATE_HOWTO
 
-									;close file handle of input
+							;close file handle of input
  	MOV   	AH, 3EH
  	MOV   	BX, HANDLE_LOADING
  	INT   	21H
@@ -617,20 +616,20 @@ ITERATE_HOWTO:						;Blinks the high score
 	RET
 HOWTO ENDP
 ;----------------------------------------------------------------------
-HIGHS PROC NEAR					 ;When HS is chosen this the process that executes
+HIGHS PROC NEAR						 ;When HS is chosen this the process that executes
   	MOV   	BH, 0EH         
   	MOV   	CX, 0000H       
   	MOV   	DX, 184FH       
   	CALL  	_CLEAR_SCREEN
 
-  								 ;open file
+  							;open file
   	MOV   	AH, 3DH
   	MOV   	AL, 00
   	LEA   	DX, PATH_SCOREZ
   	INT   	21H
   	MOV   	HANDLE_LOADING, AX
 
-  								;read file
+  							;read file
   	MOV   	AH, 3FH
   	MOV   	BX, HANDLE_LOADING
   	MOV   	CX, 7500
@@ -642,10 +641,10 @@ HIGHS PROC NEAR					 ;When HS is chosen this the process that executes
   	CALL  	_SET_CURSOR
 
   	MOV 	GAME_STATUS, 6
-  								;print
+  							;print
   	LEA   	SI, LOAD_STR
   	CALL  	OUTPUT_EXT
-  								;close file handle of input
+  							;close file handle of input
   	MOV   	AH, 3EH
   	MOV   	BX, HANDLE_LOADING
   	INT   	21H
@@ -682,27 +681,27 @@ MAINMENU PROC NEAR					;The first page the shows right after loading
 	MOV 	CX, 0000H
 	MOV 	DX, 184FH
 	CALL 	_CLEAR_SCREEN
-	MOV		BH, 83H 				;background: blinking, foreground: yellow
+	MOV	BH, 83H 				;background: blinking, foreground: aqua
 	MOV 	CX, 0B15H  				;from a certain point
-	MOV		DX, 1224H 
+	MOV	DX, 1224H 
 	CALL 	_CLEAR_SCREEN
-									;open file
+							;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_MENU
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
-									;read file
+							;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
 	LEA 	DX, LOAD_STR
 	INT 	21H
-									;setting cursor to the upperleftmost
+							;setting cursor to the upperleftmost
 	MOV 	DL, 0H
 	MOV 	DH, 0
 	CALL 	_SET_CURSOR
-									;print
+							;print
 	LEA 	SI, LOAD_STR
 	CALL 	OUTPUT_EXT
 	MOV 	CL, 05H
@@ -724,7 +723,7 @@ ITERATE:
 	RET
 MAINMENU ENDP
 ;----------------------------------------------------------------------
-PLAY PROC NEAR 					;Play process which sets the screen and game arena
+PLAY PROC NEAR 						;Play process which sets the screen and game arena
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 0000H
 	MOV 	DX, 207FH
@@ -736,63 +735,63 @@ PLAY PROC NEAR 					;Play process which sets the screen and game arena
 
 PLAYING:
 	CMP 	STATUS_GM, 4
-	JNE		RANDOM_GENERATOR
+	JNE	RANDOM_GENERATOR
 	CMP 	INTERVAL, 350
 	JBE 	RANDOM_GENERATOR
 	SUB 	INTERVAL, 20
 
 RANDOM_GENERATOR:
-	MOV     AH, 00h   				; interrupt to get system timer in CX:DX 
+	MOV     AH, 00h   				;interrupt to get system timer in CX:DX 
 	INT     1AH
 	MOV     [PSEUDO], DX
-    MOV     AX, 25173          		; LCG Multiplier
-    MUL     word ptr [PSEUDO]     		; DX:AX = LCG multiplier * seed
-    ADD     AX, 13849          		; Add LCG increment value
-    MOV     [PSEUDO], AX          		; Update seed = return value
+    	MOV     AX, 25173          			;LCG Multiplier
+        MUL     word ptr [PSEUDO]     			; DX:AX = LCG multiplier * seed
+    	ADD     AX, 13849          			; Add LCG increment value
+        MOV     [PSEUDO], AX         			; Update seed = return value
 	XOR     DX, DX
 	MOV     CX, DIVISOR    
-	DIV     CX        ; here dx contains the remainder - from 0 to 4
+	DIV     CX      				 ; here dx contains the remainder - from 0 to 4
 	
 	CMP 	PRN, DX
-	JE 		RANDOM_GENERATOR
+	JE 	RANDOM_GENERATOR
 	MOV 	PRN, DX
 
 	CMP 	DX, 1
-	JB 		_INSTANCE_1
-	JE 		_INSTANCE_2
+	JB 	_INSTANCE_1
+	JE 	_INSTANCE_2
 	CMP 	DX, 3
-	JB		_INSTANCE_3
-	JE 		_INSTANCE_4
+	JB	_INSTANCE_3
+	JE 	_INSTANCE_4
 	CMP 	DX, 5
-	JB		_INSTANCE_5
-	JE 		_INSTANCE_6
+	JB	_INSTANCE_5
+	JE 	_INSTANCE_6
 	CMP 	DX, 7
-	JB		_INSTANCE_7
-	JE 		_INSTANCE_8
+	JB	_INSTANCE_7
+	JE 	_INSTANCE_8
 	CMP 	DX, 9
-	JB		_INSTANCE_9
-	JE 		_INSTANCE_10
+	JB	_INSTANCE_9
+	JE 	_INSTANCE_10
 	CMP 	DX, 11
-	JB		_INSTANCE_11
-	JE 		_INSTANCE_12
+	JB	_INSTANCE_11
+	JE 	_INSTANCE_12
 	CMP 	DX, 13
-	JB		_INSTANCE_13
-	JE 		_INSTANCE_14
+	JB	_INSTANCE_13
+	JE 	_INSTANCE_14
 	CMP 	DX, 15
-	JB		_INSTANCE_15
-	JE 		_INSTANCE_16
+	JB	_INSTANCE_15
+	JE 	_INSTANCE_16
 	CMP 	DX, 17
-	JB		_INSTANCE_17
-	JE 		_INSTANCE_18
+	JB	_INSTANCE_17
+	JE 	_INSTANCE_18
 	CMP 	DX, 19
-	JB 		_INSTANCE_19
-	JE 		_INSTANCE_20
+	JB 	_INSTANCE_19
+	JE 	_INSTANCE_20
 	CMP 	DX, 21
-	JB 		_INSTANCE_21
-	JE 		_INSTANCE_22_BR
-	JA 		RANDOM_GENERATOR
+	JB 	_INSTANCE_21
+	JE 	_INSTANCE_22_BR
+	JA 	RANDOM_GENERATOR
 
-_INSTANCE_1:
+_INSTANCE_1:				;Instances are Bridges for proc calls
 	CALL 	INSTANCE_1
 	JMP 	START
 
@@ -884,7 +883,7 @@ MOVE_WALL:
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	INT 	21H
-	JC 		DISPLAY_ERROR1
+	JC 	DISPLAY_ERROR1
 	MOV 	HANDLE_LOADING, AX
 
 									;read file
@@ -893,32 +892,16 @@ MOVE_WALL:
 	MOV 	CX, 7500
 	LEA 	DX, PLAY_STR
 	INT 	21H
-	JC 		DISPLAY_ERROR2
+	JC 	DISPLAY_ERROR2
 	CMP 	AX, 00
-	JE 		DISPLAY_ERROR3
+	JE 	DISPLAY_ERROR3
 	JNE 	PURSUE
 
 
-DISPLAY_ERROR1:
+DISPLAY_ERROR1:								;Error handling
 	LEA 	DX, PROMPT_ERROR1
 	MOV 	AH, 09H
 	INT 	21H
-	LEA 	DX, PATH_EASY5
-	MOV 	AH, 09H
-	INT 	21H
-	LEA 	DX, PATH_EASY4
-	MOV 	AH, 09H
-	INT 	21H
-	LEA 	DX, PATH_EASY3
-	MOV 	AH, 09H
-	INT 	21H
-	LEA 	DX, PATH_EASY2
-	MOV 	AH, 09H
-	INT 	21H
-	LEA 	DX, PATH_EASY1
-	MOV 	AH, 09H
-	INT 	21H
-	JMP 	RANDOM_GENERATOR
 	CALL 	_TERMINATE
 
 DISPLAY_ERROR2:
@@ -951,7 +934,7 @@ PURSUE:
 	INT 	21H
 	JMP 	CURR_STATING
 
-EASY_ONE:
+EASY_ONE:								;Walls Movement
 	LEA 	DX, PATH_EASY1
 	JMP 	MOVE_WALL
 EASY_TWO:
@@ -1014,7 +997,7 @@ CURR_STATING:
 	JE 		_CHK_INS_22
 
 
-_CHK_INS_1:
+_CHK_INS_1:								;CHK are cridges for proc calls
 	CALL 	CHK_INS_1
 	JMP 	INC_SCORE
 
@@ -1088,21 +1071,21 @@ PLAYING_BR2:
 	JMP 	PLAYING
 
 GAME_OVER:
-	MOV 	GAME_STATUS, 3
+	MOV 	GAME_STATUS, 3							;Game Over instance
 	MOV 	DX, 0000H
 	CALL 	_SET_CURSOR
 	MOV 	BH, 04H 
 	MOV 	CX, 0000H
 	MOV 	DX, 184FH 
 	CALL 	_CLEAR_SCREEN
-	;open file
+										;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_GAMEOVER
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
 
-	;read file
+										;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
@@ -1115,7 +1098,7 @@ GAME_OVER:
 	CALL 	_DELAY
 	RET
 
-INC_SCORE:
+INC_SCORE:									;Increment Score in status bar
 	LEA 	SI, SCORE_TXT
 	ADD 	SI, 9
 	MOV 	AH, [SI]
@@ -1123,12 +1106,12 @@ INC_SCORE:
 	CMP 	AH, 58
 	JE 		TENS_INC
 	MOV 	[SI], AH
-DEC_LOOPS:
+DEC_LOOPS:									;Ones, Tens, Hundreds place for score 				
 	DEC 	LOOPS
 	CMP 	LOOPS, 0
 	JGE 	PLAYING_BR2
 	RET
-TENS_INC:
+TENS_INC:										
 	MOV 	AH, 48
 	MOV 	[SI], AH
 	DEC 	SI
@@ -1162,7 +1145,7 @@ _SET_CURSOR PROC	NEAR				;Sets the cursor
 	RET
 _SET_CURSOR ENDP
 ;----------------------------------------------------------------------
-_DELAY PROC	NEAR						;Makes the transition smoother
+_DELAY PROC	NEAR					;Makes the transition smoother
 DELAY2:
 	DEC 	BP		
 	NOP
@@ -1173,7 +1156,7 @@ DELAY2:
 	RET
 _DELAY ENDP
 ;----------------------------------------------------------------------
-_DELAYSEC PROC	NEAR 				  ;Extends the delay used in game play
+_DELAYSEC PROC	NEAR 				   	;Extends the delay used in game play
 DELAY3:
 	MOV 	DX, 0002H
 	CALL 	_SET_CURSOR
@@ -1191,23 +1174,23 @@ DELAY3:
 	CMP 	CURR_STATE, 11
 	JA 		DONT_MOVE
 	MOV 	CL, CURR_STATE
-PROGRESS_BAR:
+PROGRESS_BAR:						;Displays the progression of the wall
 	MOV 	DX, 219
 	MOV 	AH, 02H
 	INT 	21H
 	LOOP 	PROGRESS_BAR
 	JMP 	MOVE_NOW
 
-DONT_MOVE:
+DONT_MOVE:						;Progress bar stopper
 	MOV 	CL, 11
 	JMP 	PROGRESS_BAR
 
-MOVE_NOW:
+MOVE_NOW:						;Progress bar mover
 	MOV 	CX, 000BH
 	SUB 	CL, CURR_STATE
 	CMP 	CURR_STATE, 11
 	JAE 	SKIP_SPACE
-PROGRESS_BAR_SP:
+PROGRESS_BAR_SP:					;Progress bar space
 	MOV 	DX, 32
 	MOV 	AH, 02H
 	INT 	21H
@@ -1222,48 +1205,48 @@ SKIP_SPACE:
 	MOV 	DX, 0000H
 	CALL 	_SET_CURSOR
 	CALL 	_GET_KEY_PL
-	CMP 	RIGHT_HAND, 1
-	JB 		IMPL_UPR_RIGHT_DOWN
+	CMP 	RIGHT_HAND, 1			;right arms compare
+	JB 	IMPL_UPR_RIGHT_DOWN
 	JE  	IMPL_UPR_RIGHT_UP
-	JA 		IMPL_UPR_RIGHT_BELOW_BR
+	JA 	IMPL_UPR_RIGHT_BELOW_BR
 CONT_CMP:
-	CMP	 	LEFT_HAND, 1
-	JB 		IMPL_UPR_LEFT_DOWN_BR
+	CMP	LEFT_HAND, 1			;Left arms compare
+	JB 	IMPL_UPR_LEFT_DOWN_BR
 	JE  	IMPL_UPR_LEFT_UP_BR
-	JA 		IMPL_UPR_LEFT_BELOW_BR
+	JA 	IMPL_UPR_LEFT_BELOW_BR
 CONT_CMP2:
-	CMP 	LEFT_LEG, 0
-	JE 		IMPL_LWR_LEFT_DOWN_BR
+	CMP 	LEFT_LEG, 0			;Left leg compare
+	JE 	IMPL_LWR_LEFT_DOWN_BR
 	JNE 	IMPL_LWR_LEFT_UP_BR
 CONT_CMP3:
-	CMP 	RIGHT_LEG, 0
-	JE 		IMPL_LWR_RIGHT_DOWN_BR
-	JNE		IMPL_LWR_RIGHT_UP_BR
+	CMP 	RIGHT_LEG, 0			;Right leg compare
+	JE 	IMPL_LWR_RIGHT_DOWN_BR
+	JNE	IMPL_LWR_RIGHT_UP_BR
 
 IMPL_UPR_RIGHT_DOWN:
-	MOV		BH, BACKGROUND_P		;background: black, foreground: orange
-	MOV 	CX, 0827H  				;from top, leftmost
-	MOV		DX, 082BH 				;to bottom, rightmost
+	MOV	BH, BACKGROUND_P		;background: black, foreground: orange
+	MOV 	CX, 0827H  			;from top, leftmost
+	MOV	DX, 082BH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen
-	MOV 	CX, 0929H  				;from top, leftmost
-	MOV		DX, 092BH 				;to bottom, rightmost
+	MOV 	CX, 0929H  			;from top, leftmost
+	MOV	DX, 092BH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen		
-	MOV 	CX, 0A28H  				;from top, leftmost
-	MOV		DX, 0B2BH 				;to bottom, rightmost
+	MOV 	CX, 0A28H  			;from top, leftmost
+	MOV	DX, 0B2BH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen	
-	MOV 	CX, 0C28H  				;from top, leftmost
-	MOV		DX, 0C28H 				;to bottom, rightmost
+	MOV 	CX, 0C28H  			;from top, leftmost
+	MOV	DX, 0C28H 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen	
-	MOV 	CX, 0D28H  				;from top, leftmost
-	MOV		DX, 0F2BH 				;to bottom, rightmost
+	MOV 	CX, 0D28H  			;from top, leftmost
+	MOV	DX, 0F2BH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen	
-	MOV 	CX, 0E28H  				;from top, leftmost
-	MOV		DX, 0E32H 				;to bottom, rightmost
+	MOV 	CX, 0E28H  			;from top, leftmost
+	MOV	DX, 0E32H 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen	
 	MOV 	CX, 1028H
 	MOV 	DX, 1129H
 	CALL 	_CLEAR_SCREEN
-	JMP	 	CONT_CMP
+	JMP	 CONT_CMP
 
 IMPL_UPR_LEFT_DOWN_BR:
 	JMP 	IMPL_UPR_LEFT_DOWN
@@ -1303,7 +1286,7 @@ IMPL_UPR_RIGHT_UP:
 	MOV 	DX, 0B2BH
 	CALL 	_CLEAR_SCREEN
 	MOV 	CX, 0C28H  
-	MOV		DX, 0C28H 	
+	MOV	DX, 0C28H 	
 	CALL	_CLEAR_SCREEN
 	MOV 	CX, 0C2CH
 	MOV 	DX, 0C2DH
@@ -1312,7 +1295,7 @@ IMPL_UPR_RIGHT_UP:
 	MOV 	DX, 0D2CH
 	CALL 	_CLEAR_SCREEN
 	MOV 	CX, 0D28H 
-	MOV		DX, 0F2BH 
+	MOV	DX, 0F2BH 
 	CALL	_CLEAR_SCREEN
 	MOV 	CX, 1028H
 	MOV 	DX, 1129H
@@ -1320,21 +1303,21 @@ IMPL_UPR_RIGHT_UP:
 	JMP 	CONT_CMP
 
 IMPL_UPR_RIGHT_BELOW:
-	MOV		BH, BACKGROUND_P		;background: black, foreground: orange
-	MOV 	CX, 0827H  				;from top, leftmost
-	MOV		DX, 082BH 				;to bottom, rightmost
+	MOV	BH, BACKGROUND_P		;background: grey
+	MOV 	CX, 0827H  			;from top, leftmost
+	MOV	DX, 082BH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen
-	MOV 	CX, 0929H  				;from top, leftmost
-	MOV		DX, 092BH 				;to bottom, rightmost
+	MOV 	CX, 0929H  			;from top, leftmost
+	MOV	DX, 092BH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen		
-	MOV 	CX, 0A28H  				;from top, leftmost
-	MOV		DX, 0B2BH 				;to bottom, rightmost
+	MOV 	CX, 0A28H  			;from top, leftmost
+	MOV	DX, 0B2BH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen	
-	MOV 	CX, 0C28H  				;from top, leftmost
-	MOV		DX, 0C28H 				;to bottom, rightmost
+	MOV 	CX, 0C28H  			;from top, leftmost
+	MOV	DX, 0C28H 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen	
-	MOV 	CX, 0D28H  				;from top, leftmost
-	MOV		DX, 0F2BH 				;to bottom, rightmost
+	MOV 	CX, 0D28H  			;from top, leftmost
+	MOV	DX, 0F2BH 			;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen		
 	MOV 	CX, 1028H
 	MOV 	DX, 1129H
@@ -1359,32 +1342,32 @@ IMPL_UPR_RIGHT_BELOW:
 DELAY3_BR:
 	JMP 	DELAY3
 IMPL_UPR_LEFT_DOWN:
-	MOV		BH, BACKGROUND_P 				;background: black, foreground: orange
+	MOV	BH, BACKGROUND_P 			;background: grey
 	MOV 	CX, 0824H  				;from top, leftmost
-	MOV		DX, 0827H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 0827H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen
 	MOV 	CX, 0924H  				;from top, leftmost
-	MOV		DX, 0924H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 0924H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 0926H  				;from top, leftmost
-	MOV		DX, 0927H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen			
+	MOV	DX, 0927H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen			
 	MOV 	CX, 0A24H  				;from top, leftmost
-	MOV		DX, 0B27H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 0B27H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 0C27H  				;from top, leftmost
-	MOV		DX, 0C27H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 0C27H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 0D24H  				;from top, leftmost
-	MOV		DX, 0F27H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 0F27H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 0E1EH  				;from top, leftmost
-	MOV		DX, 0E27H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 0E27H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen
 	MOV 	CX, 1026H
 	MOV  	DX, 1127H
 	CALL 	_CLEAR_SCREEN
-	JMP	 	CONT_CMP2
+	JMP	 CONT_CMP2
 
 CONTI:
 	DEC 	BP		
@@ -1395,22 +1378,22 @@ CONTI:
 IMPL_UPR_LEFT_UP:
 	MOV 	BH, BACKGROUND_P
 	MOV 	CX, 0824H  				;from top, leftmost
-	MOV		DX, 0827H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 0827H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen
 	MOV 	CX, 091CH
 	MOV 	DX, 091DH
 	CALL 	_CLEAR_SCREEN
 	MOV 	CX, 0924H  				;from top, leftmost
-	MOV		DX, 0924H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 0924H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 0926H  				;from top, leftmost
-	MOV		DX, 0927H 				;to bottom, rightmost
+	MOV	DX, 0927H 				;to bottom, rightmost
 	CALL 	_CLEAR_SCREEN
 	MOV 	CX, 0A1EH
 	MOV 	DX, 0A1FH
 	CALL 	_CLEAR_SCREEN
 	MOV 	CX, 0A24H  				;from top, leftmost
-	MOV		DX, 0B27H 				;to bottom, rightmost
+	MOV	DX, 0B27H 				;to bottom, rightmost
 	CALL 	_CLEAR_SCREEN
 	MOV 	CX, 0B20H
 	MOV 	DX, 0B21H
@@ -1419,8 +1402,8 @@ IMPL_UPR_LEFT_UP:
 	MOV 	DX, 0C23H
 	CALL 	_CLEAR_SCREEN
 	MOV 	CX, 0C27H  				;from top, leftmost
-	MOV		DX, 0C27H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 0C27H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen
 	MOV 	CX, 0D23H
 	MOV 	DX, 0D27H
 	CALL 	_CLEAR_SCREEN	
@@ -1432,23 +1415,23 @@ IMPL_UPR_LEFT_UP:
 IMPL_UPR_LEFT_BELOW:
 	MOV 	BH, BACKGROUND_P
 	MOV 	CX, 0824H  				;from top, leftmost
-	MOV		DX, 0827H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 0827H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen
 	MOV 	CX, 0924H  				;from top, leftmost
-	MOV		DX, 0924H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 0924H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 0926H  				;from top, leftmost
-	MOV		DX, 0927H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen			
+	MOV	DX, 0927H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen			
 	MOV 	CX, 0A24H  				;from top, leftmost
-	MOV		DX, 0B27H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 0B27H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 0C27H  				;from top, leftmost
-	MOV		DX, 0C27H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 0C27H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 0D24H  				;from top, leftmost
-	MOV		DX, 0F27H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 0F27H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen
 	MOV 	CX, 1026H
 	MOV 	DX, 1127H
 	CALL 	_CLEAR_SCREEN
@@ -1529,64 +1512,64 @@ IMPL_LWR_RIGHT_UP:
 
 _DELAYSEC ENDP
 ;----------------------------------------------------------------------
-_TERMINATE PROC							;Terminate and exits 
+_TERMINATE PROC					;Terminate and exits 
 
 	MOV 	BH, 07H 
 	MOV 	CX, 0000H
 	MOV 	DX, 184FH
 	CALL 	_CLEAR_SCREEN
 
-	MOV		AH, 4CH
-	INT		21H
+	MOV	AH, 4CH
+	INT	21H
   
   RET	
 _TERMINATE ENDP
 ;----------------------------------------------------------------------
-OUTPUT_EXT PROC NEAR	;Prints whatever text file it has been sent (walls, hs, etc)
+OUTPUT_EXT PROC NEAR				;Prints whatever text file it has been sent (walls, hs, etc)
 PRINT:
-	MOV 	DX, [SI]
+	MOV 	DX, [SI]	
 	CMP 	DL, 226
-	JE 		PROCEED
+	JE 	PROCEED
 	CMP 	DL, 207
-	JE 		WEIRD_O
-	JNE		CONT
+	JE 	WEIRD_O
+	JNE	CONT
 PROCEED:
 	INC 	SI
 	MOV 	DX, [SI]
 	CMP 	DL, 96H
-	JE 		SPECIAL
+	JE 	SPECIAL
 	INC 	SI
 	MOV 	DX, [SI]
 	CMP 	DL, 94H
-	JE 		UP_LEFT
+	JE 	UP_LEFT
 	CMP 	DL, 97H
-	JE 		UP_RIGHT
+	JE 	UP_RIGHT
 	CMP 	DL, 91H
-	JE 		STRA_VERT
+	JE 	STRA_VERT
 	CMP 	DL, 9DH
-	JE 		LOW_LEFT
+	JE 	LOW_LEFT
 	CMP 	DL, 9AH
-	JE 		LOW_RIGHT
+	JE 	LOW_RIGHT
 	CMP 	DL, 90H
-	JE		STRA_HORI
+	JE	STRA_HORI
 	CMP 	DL, 166
-	JE 		TOP_DOWN
-	CMP		DL, 169
-	JE 		BOTTOM_UP
+	JE 	TOP_DOWN
+	CMP	DL, 169
+	JE 	BOTTOM_UP
 	CMP 	DL, 172
-	JE 		MULTI
+	JE 	MULTI
 	JNE 	CONT
 
 CONT:
 	CMP 	DL, 24H
-	JE 		RETURN_LOAD
+	JE 	RETURN_LOAD
 	MOV 	AH, 02H
 	INT 	21H
 	INC 	SI
 	CMP 	DL, 188
 	JNE 	PRINT
 	CMP 	GAME_STATUS, 2
-	JAE		RETURN_LOAD
+	JAE	RETURN_LOAD
 	JNE 	PRINT
 
 WEIRD_O:
@@ -1622,13 +1605,13 @@ SPECIAL:
 	INC 	SI 
 	MOV 	DX, [SI]
 	CMP 	DL, 91H
-	JE 		STRIKE
+	JE 	STRIKE
 	CMP 	DL, 88H
-	JE 		BLACK
+	JE 	BLACK
 	CMP 	DL, 93H
-	JE 		BLACK_STRIKE
+	JE 	BLACK_STRIKE
 	CMP 	DL, 186
-	JE 		CURSOR_POINT
+	JE 	CURSOR_POINT
 	JNE 	CONT
 
 STRA_HORI:
@@ -1651,33 +1634,33 @@ RETURN_LOAD:
 	RET
 OUTPUT_EXT ENDP
 ;-----------------------------------------------------------------
-_GET_KEY	PROC	NEAR	;Checks if the assigned controls were pressed	
-	MOV		AH, 01H			;check for input [given]
-	INT		16H
-	JZ		__LEAVETHIS
+_GET_KEY  PROC  NEAR			;Checks if the assigned controls were pressed	
+	MOV	AH, 01H			;check for input [given]
+	INT	16H
+	JZ	__LEAVETHIS
 
-	MOV		AH, 00H			;get input	MOV AH, 10H; INT 16H [given]
-	INT		16H
+	MOV	AH, 00H			;get input	MOV AH, 10H; INT 16H [given]
+	INT	16H
 
 	CMP 	GAME_STATUS, 5
 	JAE 	ENTER_ONLY
-	CMP		AH, 4DH 
-	JE		__RIGHT_ASSIGN	;value of RIGHT key is AH = 4DH
+	CMP	AH, 4DH 
+	JE	__RIGHT_ASSIGN		;value of RIGHT key is AH = 4DH
 	CMP 	AH, 4BH
-	JE		__LEFT_ASSIGN	;value of LEFT key is AH = 4BH
+	JE	__LEFT_ASSIGN		;value of LEFT key is AH = 4BH
 ENTER_ONLY:
 	CMP 	AL, 0DH
-	JE 		_ENTERED
-	JNE 	__LEAVETHIS		;TODO implement enter
+	JE 	_ENTERED
+	JNE 	__LEAVETHIS		
 __RIGHT_ASSIGN:
 	ADD 	STATUS, 1
 	CMP 	STATUS, 5
-	JE 		__DECRE
+	JE 	__DECRE
 	JMP 	__MOV_POINTER
 __LEFT_ASSIGN:
-	SUB		STATUS, 1
+	SUB	STATUS, 1
 	CMP 	STATUS, 0
-	JE 		__INCRE
+	JE 	__INCRE
 	JMP 	__MOV_POINTER
 _ENTERED:
 	MOV 	ENTER, 1
@@ -1694,25 +1677,25 @@ __LEAVETHIS:
 	CALL 	_SET_CURSOR
 	RET
 __MOV_POINTER:
-	MOV		BH, BACKGROUND_G 				;background: black, foreground: orange
+	MOV	BH, BACKGROUND_G 			;background: black, foreground: orange
 	MOV 	CX, 1507H  				;from top, leftmost
-	MOV		DX, 1509H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen
+	MOV	DX, 1509H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen
 	MOV 	CX, 1515H  				;from top, leftmost
-	MOV		DX, 1518H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen	
+	MOV	DX, 1518H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen	
 	MOV 	CX, 152AH  				;from top, leftmost
-	MOV		DX, 152DH 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen		
+	MOV	DX, 152DH 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen		
 	MOV 	CX, 153EH  				;from top, leftmost
-	MOV		DX, 1540H 				;to bottom, rightmost
-	CALL	_CLEAR_SCREEN			;clear screen		
+	MOV	DX, 1540H 				;to bottom, rightmost
+	CALL	_CLEAR_SCREEN				;clear screen		
 	CMP 	STATUS, 2
-	JB 		__PLAY
-	JE 		__HOWTO
+	JB 	__PLAY
+	JE 	__HOWTO
 	CMP 	STATUS, 4
-	JB		__HIGH
-	JE 		__EXIT
+	JB	__HIGH
+	JE 	__EXIT
 
 __PLAY:
 	MOV 	DH, 15H
@@ -1751,42 +1734,42 @@ __EXIT:
 	JMP 	__LEAVETHIS
 _GET_KEY 	ENDP
 ;----------------------------------------------------------------------
-_GET_KEY_PL	PROC	NEAR	;Same as get key but work only in play state	
-	MOV		AH, 01H			;check for input [given]
-	INT		16H
+_GET_KEY_PL	PROC	NEAR		;Same as get key but work only in play state	
+	MOV	AH, 01H			;check for input [given]
+	INT	16H
 
-	JZ		__LEAVETHIS2_BR
+	JZ	__LEAVETHIS2_BR
 
-	MOV		AH, 00H			;get input	MOV AH, 10H; INT 16H [given]
-	INT		16H
+	MOV	AH, 00H			;get input	MOV AH, 10H; INT 16H [given]
+	INT	16H
 
-	CMP		AL, 46H 
-	JE		__F				;value of RIGHT key is AH = 4DH
+	CMP	AL, 46H 
+	JE	__F			;value of RIGHT key is AH = 4DH
 	CMP 	AL, 66H
-	JE 		__F
+	JE 	__F
 	CMP 	AL, 76H
-	JE 		__V_BR
+	JE 	__V_BR
 	CMP 	AL, 56H
-	JE 		__V_BR
+	JE 	__V_BR
 	CMP 	AL, 62H
-	JE 		__B_BR
+	JE 	__B_BR
 	CMP 	AL, 42H 
-	JE 		__B_BR
+	JE 	__B_BR
 	CMP 	AL, 68H
-	JE 		__H_BR
+	JE 	__H_BR
 	CMP 	AL, 48H
-	JE		__H_BR				;value of LEFT key is AH = 4BH
+	JE	__H_BR			;value of LEFT key is AH = 4BH
 	JNE 	__LEAVETHIS2_BR	
 
 __F:
 	ADD 	LEFT_HAND, 1
 	CMP 	STATUS_GM, 3
-	JB 		EMH_LEFT_HAND
+	JB 	EMH_LEFT_HAND
 	CMP 	LEFT_HAND, 3
-	JE 		__DECREMENT
+	JE 	__DECREMENT
 EMH_LEFT_HAND:
 	CMP 	LEFT_HAND, 2
-	JE 		__MID_L
+	JE 	__MID_L
 LEFT_HAND_CONT:
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 0E1DH
@@ -1799,7 +1782,6 @@ __LEAVETHIS2_BR:
 
 __DECREMENT:
 	MOV 	LEFT_HAND, 0
-	;TODO add upr left blw revert
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 0D22H
 	MOV 	DX, 0D23H
@@ -1819,18 +1801,18 @@ __DECREMENT:
 	JMP 	__MOV_POINTERS
 
 __V_BR:
-	JMP 	__V
+	JMP __V
 __B_BR:
-	JMP 	__B
+	JMP __B
 __H_BR:
-	JMP 	__H
+	JMP __H
 
 __MID_L:
 	CMP 	STATUS_GM, 3
-	JAE		__MID_L_REV
+	JAE	__MID_L_REV
 	MOV 	LEFT_HAND, 0
 __MID_L_REV:
-	;BACKGROUND REVERT
+						;BACKGROUND REVERT
 	MOV 	BH, BACKGROUND_G		
 	MOV 	CX, 091CH
 	MOV 	DX, 091DH
@@ -1850,14 +1832,14 @@ __MID_L_REV:
 	JMP 	__MOV_POINTERS
 
 __H:
-	ADD		RIGHT_HAND, 1
+	ADD	RIGHT_HAND, 1
 	CMP 	STATUS_GM, 3
-	JB 		EMH_RIGHT_HAND
+	JB 	EMH_RIGHT_HAND
 	CMP 	RIGHT_HAND, 3
-	JE 		__INCREMENT
+	JE 	__INCREMENT
 EMH_RIGHT_HAND:
 	CMP 	RIGHT_HAND, 2
-	JE 		__MID_R
+	JE 	__MID_R
 RIGHT_HAND_CONT:
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 0E2BH
@@ -1867,7 +1849,6 @@ RIGHT_HAND_CONT:
 
 __INCREMENT:
 	MOV 	RIGHT_HAND, 0
-	;TODO revert upr ri blw
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 0D2CH
 	MOV 	DX, 0D2DH
@@ -1887,7 +1868,7 @@ __INCREMENT:
 	JMP 	__MOV_POINTERS
 __MID_R:
 	CMP 	STATUS_GM, 3
-	JAE		__MID_R_REV
+	JAE	__MID_R_REV
 	MOV 	RIGHT_HAND, 0
 __MID_R_REV:
 	;BACKGROUND REVERT
@@ -1911,10 +1892,10 @@ __MID_R_REV:
 
 __V:
 	CMP 	STATUS_GM, 1
-	JE 		__MOV_POINTERS_BR
+	JE 	__MOV_POINTERS_BR
 	ADD 	LEFT_LEG, 1
 	CMP  	LEFT_LEG, 2
-	JE 		__LEDECREMENT
+	JE 	__LEDECREMENT
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 1026H
 	MOV 	DX, 1527H
@@ -1926,10 +1907,10 @@ __V:
 
 __B:
 	CMP 	STATUS_GM, 1
-	JE 		__MOV_POINTERS_BR
+	JE 	__MOV_POINTERS_BR
 	ADD 	RIGHT_LEG, 1
 	CMP 	RIGHT_LEG, 2
-	JE 		__REINCREMENT
+	JE 	__REINCREMENT
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 1028H
 	MOV 	DX, 1529H
@@ -1965,7 +1946,7 @@ __LEDECREMENT:
 	MOV 	CX, 161FH
 	MOV 	DX, 1622H
 	CALL 	_CLEAR_SCREEN
-	JMP	 	__MOV_POINTERS
+	JMP	__MOV_POINTERS
 
 
 __REINCREMENT:
@@ -2011,23 +1992,23 @@ _GET_KEY_PL	ENDP
 INSTANCE_1 PROC NEAR				;All INSTANCES procs are to make sure 												;that only the expected walls in each 												;levels are displayed
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDD1
-	LEA		DI, PATH_EASY1
+	LEA	DI, PATH_EASY1
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDD2
-	LEA		DI, PATH_EASY2
+	LEA	DI, PATH_EASY2
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDD3
-	LEA		DI, PATH_EASY3
+	LEA	DI, PATH_EASY3
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDD4
-	LEA		DI, PATH_EASY4
+	LEA	DI, PATH_EASY4
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDD5
-	LEA		DI, PATH_EASY5
+	LEA	DI, PATH_EASY5
 	REP 	MOVSB
 	RET 
 INSTANCE_1 ENDP
@@ -2035,23 +2016,23 @@ INSTANCE_1 ENDP
 INSTANCE_2 PROC NEAR
 	MOV 	CX, 14
 	LEA 	SI, PATH_UUDD1
-	LEA		DI, PATH_EASY1
+	LEA	DI, PATH_EASY1
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_UUDD2
-	LEA		DI, PATH_EASY2
+	LEA	DI, PATH_EASY2
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_UUDD3
-	LEA		DI, PATH_EASY3
+	LEA	DI, PATH_EASY3
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_UUDD4
-	LEA		DI, PATH_EASY4
+	LEA	DI, PATH_EASY4
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_UUDD5
-	LEA		DI, PATH_EASY5
+	LEA	DI, PATH_EASY5
 	REP 	MOVSB
 	RET 
 INSTANCE_2 ENDP
@@ -2059,23 +2040,23 @@ INSTANCE_2 ENDP
 INSTANCE_3 PROC NEAR
 	MOV 	CX, 14
 	LEA 	SI, PATH_UDDD1
-	LEA		DI, PATH_EASY1
+	LEA	DI, PATH_EASY1
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_UDDD2
-	LEA		DI, PATH_EASY2
+	LEA	DI, PATH_EASY2
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_UDDD3
-	LEA		DI, PATH_EASY3
+	LEA	DI, PATH_EASY3
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_UDDD4
-	LEA		DI, PATH_EASY4
+	LEA	DI, PATH_EASY4
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_UDDD5
-	LEA		DI, PATH_EASY5
+	LEA	DI, PATH_EASY5
 	REP 	MOVSB
 	RET 
 INSTANCE_3 ENDP
@@ -2083,23 +2064,23 @@ INSTANCE_3 ENDP
 INSTANCE_4 PROC NEAR
 	MOV 	CX, 14
 	LEA 	SI, PATH_DUDD1
-	LEA		DI, PATH_EASY1
+	LEA	DI, PATH_EASY1
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DUDD2
-	LEA		DI, PATH_EASY2
+	LEA	DI, PATH_EASY2
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DUDD3
-	LEA		DI, PATH_EASY3
+	LEA	DI, PATH_EASY3
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DUDD4
-	LEA		DI, PATH_EASY4
+	LEA	DI, PATH_EASY4
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DUDD5
-	LEA		DI, PATH_EASY5
+	LEA	DI, PATH_EASY5
 	REP 	MOVSB
 	RET 
 INSTANCE_4 ENDP
@@ -2168,23 +2149,23 @@ CHK_INS_4 ENDP
 INSTANCE_5 PROC NEAR
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDU1
-	LEA		DI, PATH_EASY1
+	LEA	DI, PATH_EASY1
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDU2
-	LEA		DI, PATH_EASY2
+	LEA	DI, PATH_EASY2
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDU3
-	LEA		DI, PATH_EASY3
+	LEA	DI, PATH_EASY3
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDU4
-	LEA		DI, PATH_EASY4
+	LEA	DI, PATH_EASY4
 	REP 	MOVSB
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDU5
-	LEA		DI, PATH_EASY5
+	LEA	DI, PATH_EASY5
 	REP 	MOVSB
 	RET 
 INSTANCE_5 ENDP
