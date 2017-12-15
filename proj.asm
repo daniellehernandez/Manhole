@@ -3,40 +3,40 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 ;---------------------------------------------
 .STACK 32
 ;---------------------------------------------
-.data											;Res files needed to be read 
+.data								;Res files needed to be read 
 	PATH_LOADING	DB 	'res/load.txt', 00h		;From line 7 - 	160
-	PATH_MENU		DB 	'res/mm.txt', 00H
+	PATH_MENU	DB      'res/mm.txt', 00H
 	PATH_HOWPAGE	DB 	'res/howto.txt', 00H  
 	PATH_SCORE   	DB 	'res/score.txt', 00H
-  	PATH_SCOREZ  	DB  'res/high.txt', 00H
+  	PATH_SCOREZ  	DB      'res/high.txt', 00H
 
-	PATH_DDDD1 		DB 	'res/dddd5.txt', 00H
-	PATH_DDDD2 		DB 	'res/dddd4.txt', 00H
+	PATH_DDDD1 		DB 	'res/dddd5.txt', 00H	;Text files of the walls
+	PATH_DDDD2 		DB 	'res/dddd4.txt', 00H	;DDDD - Down Down Down Down
 	PATH_DDDD3 		DB 	'res/dddd3.txt', 00H
 	PATH_DDDD4 		DB 	'res/dddd2.txt', 00H
 	PATH_DDDD5 		DB 	'res/dddd1.txt', 00H
-	PATH_UDDD1 		DB 	'res/uddd5.txt', 00H
+	PATH_UDDD1 		DB 	'res/uddd5.txt', 00H	;UDDD - Up Down Down Down
 	PATH_UDDD2 		DB 	'res/uddd4.txt', 00H
 	PATH_UDDD3 		DB 	'res/uddd3.txt', 00H
 	PATH_UDDD4 		DB 	'res/uddd2.txt', 00H
 	PATH_UDDD5 		DB 	'res/uddd1.txt', 00H
-	PATH_UUDD1 		DB 	'res/uudd5.txt', 00H
+	PATH_UUDD1 		DB 	'res/uudd5.txt', 00H	;UUDD - Up Up Down Down
 	PATH_UUDD2 		DB 	'res/uudd4.txt', 00H
 	PATH_UUDD3 		DB 	'res/uudd3.txt', 00H
 	PATH_UUDD4 		DB 	'res/uudd2.txt', 00H
 	PATH_UUDD5 		DB 	'res/uudd1.txt', 00H
-	PATH_DUDD1 		DB 	'res/dudd5.txt', 00H
+	PATH_DUDD1 		DB 	'res/dudd5.txt', 00H	;DUDD - Down Up Down Down
 	PATH_DUDD2 		DB 	'res/dudd4.txt', 00H
 	PATH_DUDD3 		DB 	'res/dudd3.txt', 00H
 	PATH_DUDD4 		DB 	'res/dudd2.txt', 00H
 	PATH_DUDD5 		DB 	'res/dudd1.txt', 00H
 
-	PATH_DDDU1 		DB 	'res/dddu5.txt', 00H
+	PATH_DDDU1 		DB 	'res/dddu5.txt', 00H	;DDDU - Down Down Down UP
 	PATH_DDDU2 		DB 	'res/dddu4.txt', 00H
 	PATH_DDDU3 		DB 	'res/dddu3.txt', 00H
 	PATH_DDDU4 		DB 	'res/dddu2.txt', 00H
 	PATH_DDDU5 		DB 	'res/dddu1.txt', 00H
-	PATH_UDDU1 		DB 	'res/uddu5.txt', 00H
+	PATH_UDDU1 		DB 	'res/uddu5.txt', 00H	;UDDU - Up Down Down Up
 	PATH_UDDU2 		DB 	'res/uddu4.txt', 00H
 	PATH_UDDU3 		DB 	'res/uddu3.txt', 00H
 	PATH_UDDU4 		DB 	'res/uddu2.txt', 00H
@@ -52,7 +52,7 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	PATH_DUDU4 		DB 	'res/dudu2.txt', 00H
 	PATH_DUDU5 		DB 	'res/dudu1.txt', 00H
 
-	PATH_DDUD1 		DB 	'res/ddud5.txt', 00H
+	PATH_DDUD1 		DB 	'res/ddud5.txt', 00H	
 	PATH_DDUD2 		DB 	'res/ddud4.txt', 00H
 	PATH_DDUD3 		DB 	'res/ddud3.txt', 00H
 	PATH_DDUD4 		DB 	'res/ddud2.txt', 00H
