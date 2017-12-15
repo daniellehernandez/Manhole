@@ -3,8 +3,8 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 ;---------------------------------------------
 .STACK 32
 ;---------------------------------------------
-.DATA
-	PATH_LOADING	DB 	'res/load.txt', 00H
+.data											;Res files needed to be read 
+	PATH_LOADING	DB 	'res/load.txt', 00h		;From line 7 - 	160
 	PATH_MENU		DB 	'res/mm.txt', 00H
 	PATH_HOWPAGE	DB 	'res/howto.txt', 00H  
 	PATH_SCORE   	DB 	'res/score.txt', 00H
@@ -182,6 +182,7 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	PROMPT_ERROR2	DB 	"Error reading from file.", '$'
 	PROMPT_ERROR3 	DB	"No record read from file.", '$'
 
+	CHILD_PROTECTION DB 0
 	STATUS			DB	1 				;1 for PLAY, 2 for HOW TO PLAY, 3 for HIGHSCORE, 4 for EXIT
 	LEFT_HAND		DB 	0
 	RIGHT_HAND		DB	0
@@ -203,22 +204,22 @@ TITLE MANHOLE (SIMPLIFIED .EXE FORMAT)
 	PRN 			DW 	1
 	PSEUDO 			DW 	1
 
-	LOADING_1 		DB 	"Loading 'res\easy\...'", '$'
-	LOADING_2 		DB 	"Loading 'res\medium\...'", '$'
-	LOADING_3 		DB 	"Loading 'res\hard\...'", '$'	
-	LOADING_4 		DB 	"Loading 'res\highscore\...'", '$'
-	LOADING_5 		DB 	"Initializing...", '$'
-	NEW_HIGH_SCORE 	DB 	"YOU SET A NEW HIGH SCORE!", '$'
-	SCORE_TXT		DB  "SCORE: 000", '$'
+	LOADING_1 		DB 	"Loading 'res\easy\...'", '$'		;for aethetic purposes
+	LOADING_2 		DB 	"Loading 'res\medium\...'", '$'		;for aethetic purposes
+	LOADING_3 		DB 	"Loading 'res\hard\...'", '$'		;for aethetic purposes
+	LOADING_4 		DB 	"Loading 'res\highscore\...'", '$'  ;for aethetic purposes
+	LOADING_5 		DB 	"Initializing...", '$'				;for aethetic purposes
+	NEW_HIGH_SCORE 	DB 	"YOU SET A NEW HIGH SCORE!", '$'	;PROMPT IN GAME OVER	
+	SCORE_TXT		DB  "SCORE: 000", '$'					;Score in game over	
 	HISCORE_TXT 	DB 	"HI-SCORE: 000", '$'
-	LEVEL_EASY 		DB 	"LEVEL: EASY", '$'
-	LEVEL_MEDIUM 	DB 	"LEVEL: MEDIUM", '$'
+	LEVEL_EASY 		DB 	"LEVEL: EASY", '$'					;Status Bar Objects	
+	LEVEL_MEDIUM 	DB 	"LEVEL: MEDIUM", '$'				;line 214 - 217
 	LEVEL_HARD 		DB 	"LEVEL: HARD", '$'
 	LEVEL_ENDLESS 	DB 	"LEVEL: ENDLESS", '$'
 
 ;---------------------------------------------
 .CODE
-OURMAIN PROC FAR
+OURMAIN PROC FAR					;Starting Main
 	
 	MOV		AX, @data				;set DS to address of code segment
 	MOV 	DS, AX
@@ -228,8 +229,8 @@ OURMAIN PROC FAR
 	MOV 	AL, 0
 	LEA 	DX, PATH_SCORE
 	INT 	21H
-	MOV 	HANDLE_HISCORE, AX
-	MOV 	AH, 3FH
+	MOV 	HANDLE_HISCORE, AX 	   ;Parsing highscore first 
+	MOV 	AH, 3FH				   ;changes every screen		
 	MOV 	BX, HANDLE_HISCORE
 	MOV 	CX, 3
 	LEA 	DX, HI_SCORE
@@ -460,27 +461,27 @@ GO_ENDLESS:
 OURMAIN ENDP 
 ;----------------------------------------------------------------------
 
-LOADPAGE PROC NEAR
-	;open file
-	MOV 	AH, 3DH
+LOADPAGE PROC NEAR 						;When Screen Loads this is the process 
+										;open file
+	MOV 	AH, 3DH						
 	MOV 	AL, 00
-	LEA 	DX, PATH_LOADING
+	LEA 	DX, PATH_LOADING		
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
 
-	;read file
+										;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
 	LEA 	DX, LOAD_STR
 	INT 	21H
 
-	;set cursor to the upperleftmost
+										;set cursor to the upperleftmost
 	MOV 	DL, 0H
 	MOV 	DH, 0
 	CALL 	_SET_CURSOR
 
-	;printing the file
+										;printing the file
 	LEA 	SI, LOAD_STR
 	CALL 	OUTPUT_EXT
 
@@ -497,12 +498,12 @@ LOADING:
 	MOV 	DL, 15
 	CALL 	_SET_CURSOR
 
-	MOV		BH, BACKGROUND_G 				;background: black, foreground: orange
+	MOV		BH, BACKGROUND_G 		;background: black, foreground: orange
 	MOV 	CX, 1301H  				;from top, leftmost
 	MOV		DX, 134DH 				;to bottom, rightmost
 	CALL	_CLEAR_SCREEN			;clear screen
 
-	;the loading systems
+									;the loading systems
 	CMP 	LOADING_BAR, 17
 	JB 		DISPLAY_LOADING1
 	CMP 	LOADING_BAR, 30
@@ -519,7 +520,7 @@ BACK:
 	CMP 	LOADING_BAR, 73
 	JNE 	LOADING
 
-	;close file handle of input
+									;close file handle of input
 	MOV 	AH, 3EH
 	MOV 	BX, HANDLE_LOADING
 	INT 	21H
@@ -572,20 +573,20 @@ DISPLAY_LOADING4:
 
 LOADPAGE ENDP
 ;----------------------------------------------------------------------
-HOWTO PROC NEAR
+HOWTO PROC NEAR						;Called when HS is chosen in the Menu
 	MOV   	BH, 0EH         
 	MOV   	CX, 0000H       
 	MOV   	DX, 184FH       
 	CALL  	_CLEAR_SCREEN
 
-	;open file
+									;open file
 	MOV   	AH, 3DH
 	MOV   	AL, 00
 	LEA   	DX, PATH_HOWPAGE
 	INT  	21H
 	MOV   	HANDLE_LOADING, AX
 
-	;read file
+									;read file
 	MOV   	AH, 3FH
 	MOV   	BX, HANDLE_LOADING
 	MOV   	CX, 7500
@@ -597,18 +598,18 @@ HOWTO PROC NEAR
 	CALL  	_SET_CURSOR
 
 	MOV 	GAME_STATUS, 5
-	;print
+									;print
 	LEA   	SI, LOAD_STR
 	CALL  	OUTPUT_EXT
 	MOV 	ENTER, 0
-ITERATE_HOWTO:
+ITERATE_HOWTO:						;Blinks the high score 
 	MOV 	DX, 1747H
  	CALL  	_SET_CURSOR
  	CALL  	_GET_KEY
  	CMP 	ENTER, 1
  	JNE 	ITERATE_HOWTO
 
-;close file handle of input
+									;close file handle of input
  	MOV   	AH, 3EH
  	MOV   	BX, HANDLE_LOADING
  	INT   	21H
@@ -616,20 +617,20 @@ ITERATE_HOWTO:
 	RET
 HOWTO ENDP
 ;----------------------------------------------------------------------
-HIGHS PROC NEAR
+HIGHS PROC NEAR					 ;When HS is chosen this the process that executes
   	MOV   	BH, 0EH         
   	MOV   	CX, 0000H       
   	MOV   	DX, 184FH       
   	CALL  	_CLEAR_SCREEN
 
-  ;open file
+  								 ;open file
   	MOV   	AH, 3DH
   	MOV   	AL, 00
   	LEA   	DX, PATH_SCOREZ
   	INT   	21H
   	MOV   	HANDLE_LOADING, AX
 
-  ;read file
+  								;read file
   	MOV   	AH, 3FH
   	MOV   	BX, HANDLE_LOADING
   	MOV   	CX, 7500
@@ -641,10 +642,10 @@ HIGHS PROC NEAR
   	CALL  	_SET_CURSOR
 
   	MOV 	GAME_STATUS, 6
-  	;print
+  								;print
   	LEA   	SI, LOAD_STR
   	CALL  	OUTPUT_EXT
-  	;close file handle of input
+  								;close file handle of input
   	MOV   	AH, 3EH
   	MOV   	BX, HANDLE_LOADING
   	INT   	21H
@@ -672,7 +673,7 @@ ITERATE_HIGHS:
 	RET
 HIGHS ENDP
 ;----------------------------------------------------------------------
-MAINMENU PROC NEAR
+MAINMENU PROC NEAR					;The first page the shows right after loading
 	MOV 	BACKGROUND_G, 03H
 	MOV 	ENTER, 0
 	MOV 	STATUS, 1
@@ -685,23 +686,23 @@ MAINMENU PROC NEAR
 	MOV 	CX, 0B15H  				;from a certain point
 	MOV		DX, 1224H 
 	CALL 	_CLEAR_SCREEN
-	;open file
+									;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	LEA 	DX, PATH_MENU
 	INT 	21H
 	MOV 	HANDLE_LOADING, AX
-	;read file
+									;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
 	LEA 	DX, LOAD_STR
 	INT 	21H
-	;setting cursor to the upperleftmost
+									;setting cursor to the upperleftmost
 	MOV 	DL, 0H
 	MOV 	DH, 0
 	CALL 	_SET_CURSOR
-	;print
+									;print
 	LEA 	SI, LOAD_STR
 	CALL 	OUTPUT_EXT
 	MOV 	CL, 05H
@@ -723,7 +724,7 @@ ITERATE:
 	RET
 MAINMENU ENDP
 ;----------------------------------------------------------------------
-PLAY PROC NEAR
+PLAY PROC NEAR 					;Play process which sets the screen and game arena
 	MOV 	BH, BACKGROUND_G
 	MOV 	CX, 0000H
 	MOV 	DX, 207FH
@@ -879,14 +880,14 @@ START:
 	MOV 	CURR_STATE, 1
 	LEA 	DX, PATH_EASY1 			
 MOVE_WALL:
-	;open file
+									;open file
 	MOV 	AH, 3DH
 	MOV 	AL, 00
 	INT 	21H
 	JC 		DISPLAY_ERROR1
 	MOV 	HANDLE_LOADING, AX
 
-	;read file
+									;read file
 	MOV 	AH, 3FH
 	MOV 	BX, HANDLE_LOADING
 	MOV 	CX, 7500
@@ -937,14 +938,14 @@ PURSUE:
 	CALL 	_SET_CURSOR
 
 
-	;print
+									;print
 	LEA 	SI, PLAY_STR
 	CALL 	OUTPUT_EXT
 
 	MOV 	BP, INTERVAL
 	CALL 	_DELAYSEC
 	
-	;close file handle of input
+									;close file handle of input
 	MOV 	AH, 3EH
 	MOV 	BX, HANDLE_LOADING
 	INT 	21H
@@ -1148,20 +1149,20 @@ HUN_INC:
 
 PLAY ENDP
 ;----------------------------------------------------------------------
-_CLEAR_SCREEN PROC	NEAR
+_CLEAR_SCREEN PROC	NEAR				;Clears the screen of past contents
 	MOV		AX, 0600H
 	INT		10H
 	RET
 _CLEAR_SCREEN ENDP
 ;----------------------------------------------------------------------
-_SET_CURSOR PROC	NEAR
+_SET_CURSOR PROC	NEAR				;Sets the cursor
 	MOV		AH, 02H
 	MOV		BH, 00
 	INT		10H
 	RET
 _SET_CURSOR ENDP
 ;----------------------------------------------------------------------
-_DELAY PROC	NEAR
+_DELAY PROC	NEAR						;Makes the transition smoother
 DELAY2:
 	DEC 	BP		
 	NOP
@@ -1172,7 +1173,7 @@ DELAY2:
 	RET
 _DELAY ENDP
 ;----------------------------------------------------------------------
-_DELAYSEC PROC	NEAR
+_DELAYSEC PROC	NEAR 				  ;Extends the delay used in game play
 DELAY3:
 	MOV 	DX, 0002H
 	CALL 	_SET_CURSOR
@@ -1528,12 +1529,12 @@ IMPL_LWR_RIGHT_UP:
 
 _DELAYSEC ENDP
 ;----------------------------------------------------------------------
-_TERMINATE PROC	
+_TERMINATE PROC							;Terminate and exits 
 
 	MOV 	BH, 07H 
 	MOV 	CX, 0000H
 	MOV 	DX, 184FH
-;	CALL 	_CLEAR_SCREEN
+	CALL 	_CLEAR_SCREEN
 
 	MOV		AH, 4CH
 	INT		21H
@@ -1541,7 +1542,7 @@ _TERMINATE PROC
   RET	
 _TERMINATE ENDP
 ;----------------------------------------------------------------------
-OUTPUT_EXT PROC NEAR
+OUTPUT_EXT PROC NEAR	;Prints whatever text file it has been sent (walls, hs, etc)
 PRINT:
 	MOV 	DX, [SI]
 	CMP 	DL, 226
@@ -1650,7 +1651,7 @@ RETURN_LOAD:
 	RET
 OUTPUT_EXT ENDP
 ;-----------------------------------------------------------------
-_GET_KEY	PROC	NEAR
+_GET_KEY	PROC	NEAR	;Checks if the assigned controls were pressed	
 	MOV		AH, 01H			;check for input [given]
 	INT		16H
 	JZ		__LEAVETHIS
@@ -1750,7 +1751,7 @@ __EXIT:
 	JMP 	__LEAVETHIS
 _GET_KEY 	ENDP
 ;----------------------------------------------------------------------
-_GET_KEY_PL	PROC	NEAR
+_GET_KEY_PL	PROC	NEAR	;Same as get key but work only in play state	
 	MOV		AH, 01H			;check for input [given]
 	INT		16H
 
@@ -2007,7 +2008,7 @@ __MOV_POINTERS:
 
 _GET_KEY_PL	ENDP
 ;----------------------------------------------------------------------
-INSTANCE_1 PROC NEAR
+INSTANCE_1 PROC NEAR				;All INSTANCES procs are to make sure 												;that only the expected walls in each 												;levels are displayed
 	MOV 	CX, 14
 	LEA 	SI, PATH_DDDD1
 	LEA		DI, PATH_EASY1
@@ -2103,7 +2104,7 @@ INSTANCE_4 PROC NEAR
 	RET 
 INSTANCE_4 ENDP
 ;----------------------------------------------------------------------
-CHK_INS_1 PROC NEAR
+CHK_INS_1 PROC NEAR						;Check if the combination of the arms 										        ;and legs are exact with the walls
 	CMP 	RIGHT_HAND, 0
 	JNE 	_GAME_OVER1
 	CMP 	LEFT_HAND, 0
@@ -3064,7 +3065,7 @@ CHK_INS_28 PROC NEAR
 	RET  
 CHK_INS_28 ENDP
 ;----------------------------------------------------------------------
-GAME_OVER2 PROC NEAR
+GAME_OVER2 PROC NEAR				;Game over page which shows current score and HS
 	MOV 	GAME_STATUS, 3
 	MOV 	DX, 0000H
 	CALL 	_SET_CURSOR
@@ -3122,9 +3123,9 @@ __NEW_HIGH:
 	LEA 	DX, NEW_HIGH_SCORE
 	MOV 	AH, 09H
 	INT 	21H
-	MOV 	AH, 3CH           ;request create file
-  	MOV 	CX, 00            ;normal attribute
-  	LEA 	DX, PATH_SCORE  ;load path and file name
+	MOV 	AH, 3CH           		;request create file
+  	MOV 	CX, 00            		;normal attribute
+  	LEA 	DX, PATH_SCORE  		;load path and file name
   	INT 	21H
 	MOV 	HANDLE_HISCORE2, AX
 	
@@ -3151,6 +3152,11 @@ _GAMEOVER_CONT:
 	MOV 	SI, 50
 	CALL 	_DELAY
 
+	INC 	CHILD_PROTECTION
+	CMP 	CHILD_PROTECTION, 7
+	JNE 	GO_BACK
+	CALL 	_TERMINATE
+GO_BACK:
 	CALL 	OURMAIN
 	RET
 GAME_OVER2 ENDP
